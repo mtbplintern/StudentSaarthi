@@ -1,9 +1,5 @@
-const hostname = window.location.hostname;
-
-export const backendurl =
-  `http://${hostname}:${import.meta.env.VITE_BACKEND_PORT}`;
-  
-  export const appfirstname =  "Student"
-  export const applastname =  "Saarthi"
-
  
+export const backendurl = import.meta.env.VITE_backendurl;
+
+export const appfirstname = "Student";
+export const applastname = "Saarthi";
