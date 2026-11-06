@@ -1,0 +1,50 @@
+src/
+│
+├── Pages/
+│   └── Employer/
+│       └── AddJob/
+│           ├── AddJob.jsx
+│           ├── AddJob.css
+│           │
+│           ├── components/
+│           │   ├── JobBasicDetails.jsx
+│           │   ├── OrganizationDetails.jsx
+│           │   ├── SalaryDetails.jsx
+│           │   ├── ImportantDates.jsx
+│           │   ├── VacancyDetails.jsx
+│           │   ├── ApplicationFee.jsx
+│           │   ├── AgeDetails.jsx
+│           │   ├── Qualification.jsx
+│           │   ├── SelectionProcess.jsx
+│           │   ├── ExamDetails.jsx
+│           │   ├── JobDescription.jsx
+│           │   ├── OfficialLinks.jsx
+│           │   ├── DocumentUpload.jsx
+│           │   ├── ContactDetails.jsx
+│           │   └── JobPreview.jsx
+│           │
+│           ├── hooks/
+│           │   └── useJobForm.js
+│           │
+│           ├── utils/
+│           │   ├── validation.js
+│           │   └── initialForm.js
+│           │
+│           └── services/
+│               └── jobService.js
+│
+├── services/
+│   └── uploadService.js
+│
+└── Component/
+    └── Navbar.jsx
+
+
+database
+https://console.aiven.io/account/a5f0fe48187d/project/mtbplintern-6bd0/services/mysql-6a060ad/overview
+
+
+
+
+
+
