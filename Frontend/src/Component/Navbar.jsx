@@ -23,7 +23,7 @@ export default function Navbar () {
   const recruiterpage = recruiterRoutes.some(route =>
     location.pathname.startsWith(route)
   )
-
+ 
   const GetUserdata = async () => {
     try {
       const request = await axios.get(`${backendurl}/auth/userdata`)
