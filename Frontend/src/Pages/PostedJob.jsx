@@ -1,4 +1,4 @@
-import React from 'react'
+ import React from 'react'
 import { useLocation, useNavigate } from 'react-router-dom'
 import {
   CheckCircle,
@@ -10,8 +10,8 @@ import {
 import toast from 'react-hot-toast'
 import { useEffect } from 'react'
 
-export default function jobPosted () {
-  const navigate = useNavigate()
+export default function PostedJob() {
+   const navigate = useNavigate()
   const location = useLocation()
 
   const jobId = location.state?.jobId
@@ -113,7 +113,7 @@ export default function jobPosted () {
           rounded-full text-xs sm:text-sm font-semibold mb-4 sm:mb-5'
         >
           <Sparkles size={14} />
-          Successfully Published
+          Successfully Publishe
         </div>
 
         {/* Heading */}

@@ -13,6 +13,7 @@ import EditJob from './Pages/EditJob'
 import Profile from './Pages/Profile'
 import AllJobsPage from './Pages/AllJobsPage'
 import NotFound from './Pages/NotFount'
+import PostedJob from './Pages/PostedJob'
 
 function App () {
   return (
@@ -23,7 +24,7 @@ function App () {
           <Route index element={<Webpage />} />
           <Route path='/add-jobs' element={<AddJob />} />
           <Route path='/my-jobs' element={<MyJob />} />
-          <Route path='/job-posted' element={<JobPosted/>} />
+          <Route path='/job-posted' element={<PostedJob/>} />
           <Route path='/job-detail/:jobid' element={<Jobdetail />} />
           <Route path='/edit-job/:jobid' element={<EditJob />} />
           <Route path='/profile' element={<Profile />} />
