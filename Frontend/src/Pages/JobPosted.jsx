@@ -10,7 +10,7 @@ import {
 import toast from 'react-hot-toast'
 import { useEffect } from 'react'
 
-export default function JobPosted () {
+export default function jobPosted () {
   const navigate = useNavigate()
   const location = useLocation()
 

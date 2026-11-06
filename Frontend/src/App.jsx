@@ -5,7 +5,7 @@ import Login from './Pages/Login'
 import Register from './Pages/Register'
 import Webpage from './Pages/Webpage'
 import AddJob from './Pages/AddJob'
-import JobPosted from './Pages/jobposted'
+import jobPosted from './Pages/jobPosted'
 import MyJob from './Pages/MyJob'
 import Jobdetail from './Pages/Jobdetail'
 import MainLayout from './Layout/MainLayout'
@@ -23,7 +23,7 @@ function App () {
           <Route index element={<Webpage />} />
           <Route path='/add-jobs' element={<AddJob />} />
           <Route path='/my-jobs' element={<MyJob />} />
-          <Route path='/job-posted' element={<JobPosted />} />
+          <Route path='/job-posted' element={<jobPosted />} />
           <Route path='/job-detail/:jobid' element={<Jobdetail />} />
           <Route path='/edit-job/:jobid' element={<EditJob />} />
           <Route path='/profile' element={<Profile />} />
