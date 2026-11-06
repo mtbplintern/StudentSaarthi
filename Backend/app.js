@@ -20,8 +20,11 @@ app.use(cookieParser())
 app.use("/auth", Authroute);
 app.use("/job", Jobroute);
 app.use("/data", Webroute);
+const PORT = process.env.PORT || 3000;
+
+console.log(PORT);
 
 
-app.listen(3000, () => {
-  console.log("server start");
+app.listen(PORT, "0.0.0.0", () => {
+  console.log(`Server running on port ${PORT}`);
 });
