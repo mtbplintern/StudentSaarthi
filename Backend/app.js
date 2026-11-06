@@ -8,8 +8,17 @@ import Webroute from "./Routes/Webdata.routes.js";
 import cookieParser from 'cookie-parser'
 const app = express();
 
-app.use(cors({    origin: [process.env.CLIENT_URL ,"http://192.168.0.185:5173"],
- credentials: true }));
+const allowedOrigins = [
+    process.env.CLIENT_URL,
+    "http://localhost:5173",
+    "http://192.168.0.185:5173"
+].filter(Boolean);
+
+
+app.use(cors({
+    origin: allowedOrigins,
+    credentials: true
+}));
 
 app.get("/", (req, res) => {
   res.send("backend running");
