@@ -1,0 +1,9 @@
+@import "tailwindcss";
+ .hide-number-arrows {
+  appearance: textfield;
+}
+
+.hide-number-arrows::-webkit-inner-spin-button,
+.hide-number-arrows::-webkit-outer-spin-button {
+  display: none;
+}
