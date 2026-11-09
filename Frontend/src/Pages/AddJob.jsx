@@ -193,7 +193,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
  
 
       const formattedDates = dbjobdata?.importantDates?.map(item => {
-        if (!item.data) return item
+        if (!item.date) return item
         
         const [day, month, year] = item?.date?.split('-')
 
@@ -202,6 +202,8 @@ export default function AddJob ({ dbjobdata, accessfor }) {
           date: `${year}-${month}-${day}`
         }
       })
+      
+      
 
       setImportantDates(formattedDates)
     }

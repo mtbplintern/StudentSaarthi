@@ -377,6 +377,8 @@ export const EditJob = async (req, res) => {
     //   Update
     if (existingDates.length > 0) {
       for (const date of existingDates) {
+        console.log(date);
+        
         await connection.query(
           `UPDATE job_dates SET
       date_title = ?,

@@ -160,8 +160,6 @@ export const RegisterUser = async (req, res) => {
 };
 
 export const LoginUser = async (req, res) => {
-  console.log("Asd");
-
   const { Email, Password } = req.body;
 
   if (!Email || !Password)
