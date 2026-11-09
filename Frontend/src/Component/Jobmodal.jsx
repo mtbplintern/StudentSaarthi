@@ -47,21 +47,29 @@ export default function Jobmodal ({ job }) {
             </p>
           </div>
         </div>
-
-        <span
-          className={`shrink-0 text-[10px] sm:text-xs font-semibold
+        {job?.last_date ? (
+          <span
+            className={`shrink-0 text-[10px] sm:text-xs font-semibold
             px-2 py-1 sm:px-3 sm:py-1.5 rounded-full ${
               new Date(job?.last_date?.split('-').reverse().join('-')) >=
               new Date()
                 ? 'bg-green-50 text-green-600'
                 : 'bg-gray-100 text-gray-500'
             }`}
-        >
-          {new Date(job?.last_date?.split('-').reverse().join('-')) >=
-          new Date()
-            ? 'active'
-            : 'closed'}
-        </span>
+          >
+            {new Date(job?.last_date?.split('-').reverse().join('-')) >=
+            new Date()
+              ? 'active'
+              : 'closed'}
+          </span>
+        ) : (
+          <span
+            className={`shrink-0 text-[10px] sm:text-xs font-semibold
+            px-2 py-1 sm:px-3 sm:py-1.5 rounded-full ${'bg-gray-100 text-gray-500'}`}
+          >
+            n/a
+          </span>
+        )}
       </div>
 
       {/* Divider */}

@@ -205,7 +205,7 @@ export default function JobPreview ({ setShowPriview, finaljobdata, accessby }) 
                       className='bg-white border border-gray-200 rounded-xl overflow-hidden shadow-sm hover:shadow-md hover:border-red-200 transition-all duration-200'
                     >
                       {/* Header */}
-                      <div className='px-3.5 py-3 border-b border-red-100 bg-linear-to-r from-red-50 to-white'>
+                      <div className='px-3.5 py-2 border-b border-red-100 bg-linear-to-r from-red-50 to-white'>
                         <div className='flex items-center justify-between gap-2'>
                           <div className='min-w-0'>
                             <span className='text-[10px] font-bold uppercase tracking-wider text-red-600'>

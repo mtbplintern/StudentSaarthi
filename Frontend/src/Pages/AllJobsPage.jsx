@@ -18,12 +18,15 @@ import { useNavigate } from 'react-router-dom'
 import Loading from '../Component/Loading'
 import { IoIosShareAlt } from 'react-icons/io'
 import Jobmodal from '../Component/Jobmodal'
+import { useRef } from 'react'
 
 export default function AllJobsPage () {
   const navigate = useNavigate()
+  const isFirstRender = useRef(true)
 
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
+  const [searchloading, setsearchLoading] = useState(false)
   const [hasMore, setHasMore] = useState(true)
   const [page, setPage] = useState(1)
   const [location, setLocation] = useState('')
@@ -56,8 +59,7 @@ export default function AllJobsPage () {
 
   const GetSerchJob = async (pageNo = 1) => {
     try {
-      setLoading(true)
-
+setsearchLoading(true)
       const request = await axios.get(`${backendurl}/data/serch-jobs`, {
         params: {
           limit: 20,
@@ -78,8 +80,8 @@ export default function AllJobsPage () {
     } catch (error) {
       console.log(error)
       toast.error(error?.response?.data?.message || 'Something went wrong')
-    } finally {
-      setLoading(false)
+    } finally{
+      setsearchLoading(false)
     }
   }
 
@@ -98,6 +100,11 @@ export default function AllJobsPage () {
   }, [])
 
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false
+      return
+    }
+
     const timer = setTimeout(() => {
       GetSerchJob()
     }, 500)
@@ -161,7 +168,8 @@ export default function AllJobsPage () {
             className='bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg px-7 py-3 text-sm transition'
           >
             <i className='fas fa-search mr-2'></i>
-            Search Jobs
+            {searchloading ? "Searching" : "Search Jobs"}
+            
           </button>
         </div>
 
@@ -200,7 +208,6 @@ export default function AllJobsPage () {
       <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5'>
         {filteredJobs.map((job, i) => (
           <Jobmodal job={job} key={i} />
-      
         ))}
       </div>
 
@@ -237,4 +244,3 @@ export default function AllJobsPage () {
     </div>
   )
 }
- 

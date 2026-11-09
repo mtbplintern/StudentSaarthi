@@ -106,6 +106,8 @@ export const GetSerchJobs = async (req, res) => {
         ? = ''
         OR JD.organization_name LIKE ?
         OR JD.job_title LIKE ?
+            OR JT.name LIKE ?
+
     )
     
 
@@ -117,6 +119,7 @@ export const GetSerchJobs = async (req, res) => {
         searchlocation,
         `%${searchlocation}%`,
         searchtext,
+        `%${searchtext}%`,
         `%${searchtext}%`,
         `%${searchtext}%`,
         limit,
