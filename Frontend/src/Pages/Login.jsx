@@ -5,18 +5,20 @@ import toast from 'react-hot-toast'
 import axios from 'axios'
 import { appfirstname, applastname, backendurl } from '../config'
 import { ArrowLeft } from 'lucide-react'
-axios.defaults.withCredentials=true
+axios.defaults.withCredentials = true
 
 export default function Login () {
-
   const [Email, setEmail] = useState('')
   const [Password, setPassword] = useState('')
 
   const [rememberMe, setRememberMe] = useState(false)
+  const [Loading, setLoading] = useState(false)
   const navigate = useNavigate()
 
   const handleLogin = async e => {
     e.preventDefault()
+    if (Loading) return
+    setLoading(true)
 
     if (!Email) return toast.error('Email required')
     if (!Password) return toast.error('Password required')
@@ -29,30 +31,31 @@ export default function Login () {
 
       if (request.data.success) {
         navigate('/')
+        setLoading(false)
 
         setPassword('')
         setEmail('')
       }
     } catch (error) {
       console.log(error)
+      setLoading(false)
+
       toast.error(error?.response?.data?.message || 'Something went wrong')
     }
   }
-
 
   return (
     <div className='min-h-screen bg-slate-50 text-slate-900 font-sans antialiased flex flex-col justify-center py-12 sm:px-6 lg:px-8'>
       {/* Decorative background glow */}
       <div className='absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 bg-linear-to-tr from-red-600/5 via-red-600/5 to-transparent blur-3xl pointer-events-none -z-10' />
-     
-      
-            <p
-            onClick={() => navigate('/')}
-            className=' absolute top-5 left-5 cursor-pointer  inline-flex items-center gap-2 text-gray-500 hover:text-red-600 text-sm font-medium mb-9 transition'
-          >
-            <ArrowLeft size={17} />
-            Back to Home
-          </p>
+
+      <p
+        onClick={() => navigate('/')}
+        className=' absolute top-5 left-5 cursor-pointer  inline-flex items-center gap-2 text-gray-500 hover:text-red-600 text-sm font-medium mb-9 transition'
+      >
+        <ArrowLeft size={17} />
+        Back to Home
+      </p>
       {/* Header / Brand Logo */}
       <div className='sm:mx-auto sm:w-full sm:max-w-md'>
         <div className='flex justify-center items-center gap-2 mb-3'>
@@ -60,17 +63,13 @@ export default function Login () {
             <GiReturnArrow className='w-6 h-6 text-white' />
           </div>
           <p className='text-2xl font-bold   '>
-              <span className='text-red-600'>{appfirstname}</span>
-              <span className='text-gray-900'>{applastname}</span>
-          
+            <span className='text-red-600'>{appfirstname}</span>
+            <span className='text-gray-900'>{applastname}</span>
           </p>
-            
-            
         </div>
         <h2 className='text-center text-3xl font-bold tracking-tight text-slate-900'>
           Sign in to your account
         </h2>
-       
       </div>
 
       {/* Login Card Form */}
@@ -156,12 +155,10 @@ export default function Login () {
                 type='submit'
                 className='w-full flex justify-center py-3.5 px-4 border border-transparent rounded-xl shadow-lg shadow-red-600/25 text-sm font-semibold text-white bg-red-600 hover:bg-red-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition active:scale-95'
               >
-                Sign in
+                {Loading ? 'Signing in' : 'Sign in'}
               </button>
             </div>
           </form>
-
-        
         </div>
       </div>
     </div>
