@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { appfirstname, applastname, backendurl } from '../config'
 import toast from 'react-hot-toast'
 import axios from 'axios'
+import { Download } from 'lucide-react'
 
 export default function Navbar () {
   const navigate = useNavigate()
@@ -11,6 +12,8 @@ export default function Navbar () {
   const [Userdata, setUserdata] = useState({})
   const [Login, setLogin] = useState(false)
   const [MenuOpen, setMenuOpen] = useState(false)
+  const [installPrompt, setInstallPrompt] = useState(null)
+  const [isInstalled, setIsInstalled] = useState(false)
 
   const recruiterRoutes = [
     '/add-jobs',
@@ -23,7 +26,7 @@ export default function Navbar () {
   const recruiterpage = recruiterRoutes.some(route =>
     location.pathname.startsWith(route)
   )
- 
+
   const GetUserdata = async () => {
     try {
       const request = await axios.get(`${backendurl}/auth/userdata`)
@@ -50,6 +53,34 @@ export default function Navbar () {
   }
 
   useEffect(() => {
+    // Check if already installed
+    if (
+      window.matchMedia('(display-mode: standalone)').matches ||
+      window.navigator.standalone === true
+    ) {
+      setIsInstalled(true)
+    }
+
+    const handler = e => {
+      e.preventDefault()
+      setInstallPrompt(e)
+    }
+
+    const installedHandler = () => {
+      setIsInstalled(true)
+      setInstallPrompt(null)
+    }
+
+    window.addEventListener('beforeinstallprompt', handler)
+    window.addEventListener('appinstalled', installedHandler)
+
+    return () => {
+      window.removeEventListener('beforeinstallprompt', handler)
+      window.removeEventListener('appinstalled', installedHandler)
+    }
+  }, [])
+
+  useEffect(() => {
     GetUserdata()
   }, [])
 
@@ -74,10 +105,29 @@ export default function Navbar () {
     navigate(path)
     setMenuOpen(false)
   }
+  
+
+  const InstallApp = async () => {
+    if (!installPrompt) {
+      toast.error("Please use your browser's Add to Home Screen option.")
+      return
+    }
+    installPrompt.prompt()
+
+    const result = await installPrompt.userChoice
+
+    setInstallPrompt(null)
+
+    if (result.outcome === 'accepted') {
+      toast.success('App installed successfully!')
+    } else {
+      toast.error('User cancelled installation.')
+    }
+  }
 
   return (
     <nav className='sticky top-0 z-50 bg-white/95 backdrop-blur-xl border-b border-gray-200 shadow-sm'>
-      <div className='max-w-7xl mx-auto px-4 sm:px-6 lg:px-8'>
+      <div className='max-w-7xl mx-auto px-4 sm:px-6 '>
         <div className=' py-1.5 flex items-center justify-between'>
           {/* Logo */}
           <div
@@ -99,7 +149,7 @@ export default function Navbar () {
               <button
                 key={item.path}
                 onClick={() => handleNavigate(item.path)}
-                className={`relative px-5 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
+                className={`relative px-2 py-2.5 rounded-xl text-sm font-semibold transition-all duration-200 ${
                   isActive(item.path)
                     ? '  text-red-600'
                     : 'text-gray-600 hover:bg-gray-50 hover:text-red-600'
@@ -140,6 +190,16 @@ export default function Navbar () {
                 className='bg-red-600 hover:bg-red-700 active:scale-95 text-white px-4 sm:px-6 py-2.5 rounded-xl text-sm font-bold shadow-md shadow-red-100 transition-all'
               >
                 Login
+              </button>
+            )}
+            {!isInstalled && (
+              <button
+                onClick={InstallApp}
+                title='Install App'
+                className=' hidden md:inline-flex items-center gap-2 rounded-full bg-linear-to-r from-red-600 to-rose-500 px-3 py-2 text-xs font-semibold text-white shadow-md transition hover:scale-105 active:scale-95 sm:px-4 sm:text-sm'
+              >
+                <Download size={20} />
+                <span className='hidden lg:inline'>Install App</span>
               </button>
             )}
 
@@ -205,6 +265,16 @@ export default function Navbar () {
                 <span className='text-lg'>›</span>
               </button>
             ))}
+            {!isInstalled && (
+              <button
+                onClick={InstallApp}
+                title='Install App'
+                className=' md:hidden inline-flex items-center gap-2 rounded-full bg-linear-to-r from-red-600 to-rose-500 px-3 py-2 text-xs font-semibold text-white shadow-md transition hover:scale-105 active:scale-95 sm:px-4 sm:text-sm'
+              >
+                <Download size={20} />
+                <span>Install App</span>
+              </button>
+            )}
 
             {Login && (
               <div className='border-t border-gray-200 mt-2 pt-3 px-4'>
