@@ -255,7 +255,6 @@ export const LogoutUser = async (req, res) => {
       httpOnly: true,
       secure: true,
       sameSite: "none",
-      domain: "https://student-saarthi-ten.vercel.app",
       path: "/",
     });
 
@@ -263,6 +262,7 @@ export const LogoutUser = async (req, res) => {
       success: true,
       message: "Logout success",
     });
+
   } catch (error) {
     console.log(error);
 

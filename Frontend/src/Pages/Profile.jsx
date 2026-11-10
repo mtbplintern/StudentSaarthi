@@ -122,12 +122,13 @@ export default function Profile() {
 
       const request = await axios.get(
         `${backendurl}/auth/logout`,
+        {},
         { withCredentials: true }
       )
 
       if (request.data.success) {
         toast.success('Logout successful')
-        navigate('/login', { replace: true })
+        navigate('/login')
       } else {
         toast.error(request.data.message || 'Logout failed')
       }
