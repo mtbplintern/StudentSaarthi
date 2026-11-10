@@ -274,6 +274,132 @@ SUm(total_vacancies) AS total_vacancies
   }
 };
 
+export const GetMyJobDetail = async (req, res) => {
+    const userid = req.user?.id;
+  const roleid = req.user?.roleid;
+
+  if (!userid)
+    return res.status(400).json({ success: false, message: "Not verify" });
+
+  if (roleid != 1)
+    return res
+      .status(400)
+      .json({ success: false, message: "You are not Recruiter to add job" });
+
+  try {
+   
+
+ 
+    // 2. Get paginated jobs
+    const [JobData] = await db.query(
+      `SELECT
+        JD.id AS jobdataid,
+        JD.job_title AS title,
+        JD.organization_name AS organization,
+        JD.location,
+        JD.status,
+        JD.application_fee AS applicationfee,
+        JD.contact_email AS contactemail,
+        JD.description,
+        JD.instructions,
+        JT.name AS jobtype,
+        JT.id AS jobtypeId
+      FROM jobs JD
+      LEFT JOIN jobtype JT ON JD.jobtype_id = JT.id
+      WHERE JD.deleted = ? and  JD.user_id = ?
+     `,
+      [false,userid],
+    );
+
+    // 3. If no jobs found
+    if (JobData.length === 0) {
+      return res.status(200).json({
+        success: true,
+        jobs: [],
+        
+      });
+    }
+
+    // 4. Get all job IDs
+    const jobIds = JobData.map((job) => job.jobdataid);
+
+    // 5. Fetch all important dates
+    const [jobDate] = await db.query(
+      `SELECT
+        JD.job_id AS jobid,
+        JD.id AS dateid,
+        JD.date_title AS title,
+        DATE_FORMAT(JD.date_value, '%d-%m-%Y') AS date
+      FROM job_dates JD
+      WHERE JD.job_id IN (?)`,
+      [jobIds],
+    );
+
+    // 6. Fetch all official links
+    const [jobLink] = await db.query(
+      `SELECT
+        JL.job_id AS jobid,
+        JL.id AS linkid,
+        JL.link_title AS title,
+        JL.link_url AS url
+      FROM job_links JL
+      WHERE JL.job_id IN (?)`,
+      [jobIds],
+    );
+
+    // 7. Fetch all vacancies/posts
+    const [jobVacancies] = await db.query(
+      `SELECT
+        JV.job_id AS jobid,
+        JV.id AS vacancieid,
+        JV.post_name AS postname,
+        JV.total_vacancies AS vacancies,
+        JV.eligibility,
+        JV.age_limit AS age,
+        JV.salary,
+        JV.category
+      FROM job_vacancies JV
+      WHERE JV.job_id IN (?)`,
+      [jobIds],
+    );
+
+    // 8. Format each job with its related details
+    const formattedJobs = JobData.map((job) => {
+      const currentJobId = job.jobdataid;
+
+      return {
+        maindata: job,
+
+        importantDates: jobDate
+          .filter((date) => date.jobid === currentJobId)
+          .map(({ jobid, ...date }) => date),
+
+        posts: jobVacancies
+          .filter((post) => post.jobid === currentJobId)
+          .map(({ jobid, ...post }) => post),
+
+        officialLinks: jobLink
+          .filter((link) => link.jobid === currentJobId)
+          .map(({ jobid, ...link }) => link),
+      };
+    });
+
+    // 9. Final response
+    return res.status(200).json({
+      success: true,
+      myjobs: formattedJobs,
+      
+    });
+  } catch (error) {
+    console.log("GetJobDetailbyId Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
 export const EditJob = async (req, res) => {
   const userId = req.user?.id;
   const { jobdata } = req.body;
@@ -377,7 +503,6 @@ export const EditJob = async (req, res) => {
     //   Update
     if (existingDates.length > 0) {
       for (const date of existingDates) {
-        console.log(date);
         
         await connection.query(
           `UPDATE job_dates SET

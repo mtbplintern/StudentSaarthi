@@ -223,3 +223,338 @@ export const GetJobDetailbyId = async (req, res) => {
     });
   }
 };
+
+export const GetJobDetail = async (req, res) => {
+  const limit = Math.min(Math.max(Number(req.query.limit) || 20, 1), 100);
+  const page = Math.max(Number(req.query.page) || 1, 1);
+  const offset = (page - 1) * limit;
+
+  try {
+    // 1. Get total jobs count
+    const [[countResult]] = await db.query(
+      `SELECT COUNT(*) AS total
+       FROM jobs
+       WHERE deleted = ?`,
+      [false],
+    );
+
+    const totalJobs = countResult.total;
+
+    // 2. Get paginated jobs
+    const [JobData] = await db.query(
+      `SELECT
+        JD.id AS jobdataid,
+        JD.job_title AS title,
+        JD.organization_name AS organization,
+        JD.location,
+        JD.status,
+        JD.application_fee AS applicationfee,
+        JD.contact_email AS contactemail,
+        JD.description,
+        JD.instructions,
+        JT.name AS jobtype,
+        JT.id AS jobtypeId
+      FROM jobs JD
+      LEFT JOIN jobtype JT ON JD.jobtype_id = JT.id
+      WHERE JD.deleted = ?
+      ORDER BY JD.id DESC
+      LIMIT ? OFFSET ?`,
+      [false, limit, offset],
+    );
+
+    // 3. If no jobs found
+    if (JobData.length === 0) {
+      return res.status(200).json({
+        success: true,
+        jobs: [],
+        pagination: {
+          totalJobs,
+          totalPages: Math.ceil(totalJobs / limit),
+          currentPage: page,
+          limit,
+          hasNextPage: false,
+          hasPrevPage: page > 1,
+        },
+      });
+    }
+
+    // 4. Get all job IDs
+    const jobIds = JobData.map((job) => job.jobdataid);
+
+    // 5. Fetch all important dates
+    const [jobDate] = await db.query(
+      `SELECT
+        JD.job_id AS jobid,
+        JD.id AS dateid,
+        JD.date_title AS title,
+        DATE_FORMAT(JD.date_value, '%d-%m-%Y') AS date
+      FROM job_dates JD
+      WHERE JD.job_id IN (?)`,
+      [jobIds],
+    );
+
+    // 6. Fetch all official links
+    const [jobLink] = await db.query(
+      `SELECT
+        JL.job_id AS jobid,
+        JL.id AS linkid,
+        JL.link_title AS title,
+        JL.link_url AS url
+      FROM job_links JL
+      WHERE JL.job_id IN (?)`,
+      [jobIds],
+    );
+
+    // 7. Fetch all vacancies/posts
+    const [jobVacancies] = await db.query(
+      `SELECT
+        JV.job_id AS jobid,
+        JV.id AS vacancieid,
+        JV.post_name AS postname,
+        JV.total_vacancies AS vacancies,
+        JV.eligibility,
+        JV.age_limit AS age,
+        JV.salary,
+        JV.category
+      FROM job_vacancies JV
+      WHERE JV.job_id IN (?)`,
+      [jobIds],
+    );
+
+    // 8. Format each job with its related details
+    const formattedJobs = JobData.map((job) => {
+      const currentJobId = job.jobdataid;
+
+      return {
+        maindata: job,
+
+        importantDates: jobDate
+          .filter((date) => date.jobid === currentJobId)
+          .map(({ jobid, ...date }) => date),
+
+        posts: jobVacancies
+          .filter((post) => post.jobid === currentJobId)
+          .map(({ jobid, ...post }) => post),
+
+        officialLinks: jobLink
+          .filter((link) => link.jobid === currentJobId)
+          .map(({ jobid, ...link }) => link),
+      };
+    });
+
+    // 9. Final response
+    return res.status(200).json({
+      success: true,
+      jobs: formattedJobs,
+      pagination: {
+        totalJobs,
+        totalPages: Math.ceil(totalJobs / limit),
+        currentPage: page,
+        limit,
+        hasNextPage: page < Math.ceil(totalJobs / limit),
+        hasPrevPage: page > 1,
+      },
+    });
+  } catch (error) {
+    console.log("GetJobDetailbyId Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+
+
+export const GetSerchJobDetail = async (req, res) => {
+  try {
+    const limit = Math.min(
+      Math.max(Number(req.query.limit) || 20, 1),
+      30
+    );
+
+    const page = Math.max(Number(req.query.page) || 1, 1);
+    const offset = (page - 1) * limit;
+
+    const searchtext = (req.query.searchtext || "").trim();
+    const searchlocation = (req.query.searchlocation || "").trim();
+
+    const locationSearch = `%${searchlocation}%`;
+    const textSearch = `%${searchtext}%`;
+
+    // 1. Get total searched jobs count
+    const [[countResult]] = await db.query(
+      `SELECT COUNT(*) AS total
+       FROM jobs JD
+       LEFT JOIN jobtype JT ON JD.jobtype_id = JT.id
+       WHERE
+         JD.deleted = ?
+         AND JD.status = ?
+         AND (? = '' OR JD.location LIKE ?)
+         AND (
+           ? = ''
+           OR JD.organization_name LIKE ?
+           OR JD.job_title LIKE ?
+           OR JT.name LIKE ?
+         )`,
+      [
+        false,
+        "Published",
+        searchlocation,
+        locationSearch,
+        searchtext,
+        textSearch,
+        textSearch,
+        textSearch,
+      ]
+    );
+
+    const totalJobs = countResult.total;
+    const totalPages = Math.ceil(totalJobs / limit);
+
+    // 2. Get paginated searched jobs
+    const [JobData] = await db.query(
+      `SELECT
+        JD.id AS jobdataid,
+        JD.job_title AS title,
+        JD.organization_name AS organization,
+        JD.location,
+        JD.status,
+        JD.application_fee AS applicationfee,
+        JD.contact_email AS contactemail,
+        JD.description,
+        JD.instructions,
+        JT.name AS jobtype,
+        JT.id AS jobtypeId
+      FROM jobs JD
+      LEFT JOIN jobtype JT ON JD.jobtype_id = JT.id
+      WHERE
+        JD.deleted = ?
+        AND JD.status = ?
+        AND (? = '' OR JD.location LIKE ?)
+        AND (
+          ? = ''
+          OR JD.organization_name LIKE ?
+          OR JD.job_title LIKE ?
+          OR JT.name LIKE ?
+        )
+      ORDER BY JD.id DESC
+      LIMIT ? OFFSET ?`,
+      [
+        false,
+        "Published",
+        searchlocation,
+        locationSearch,
+        searchtext,
+        textSearch,
+        textSearch,
+        textSearch,
+        limit,
+        offset,
+      ]
+    );
+
+    // 3. If no jobs found
+    if (JobData.length === 0) {
+      return res.status(200).json({
+        success: true,
+        jobs: [],
+        pagination: {
+          totalJobs,
+          totalPages,
+          currentPage: page,
+          limit,
+          hasNextPage: false,
+          hasPrevPage: page > 1 && page <= totalPages,
+        },
+      });
+    }
+
+    // 4. Get all job IDs
+    const jobIds = JobData.map((job) => job.jobdataid);
+
+    // 5. Fetch all important dates
+    const [jobDate] = await db.query(
+      `SELECT
+        JD.job_id AS jobid,
+        JD.id AS dateid,
+        JD.date_title AS title,
+        DATE_FORMAT(JD.date_value, '%d-%m-%Y') AS date
+      FROM job_dates JD
+      WHERE JD.job_id IN (?)`,
+      [jobIds]
+    );
+
+    // 6. Fetch all official links
+    const [jobLink] = await db.query(
+      `SELECT
+        JL.job_id AS jobid,
+        JL.id AS linkid,
+        JL.link_title AS title,
+        JL.link_url AS url
+      FROM job_links JL
+      WHERE JL.job_id IN (?)`,
+      [jobIds]
+    );
+
+    // 7. Fetch all vacancies/posts
+    const [jobVacancies] = await db.query(
+      `SELECT
+        JV.job_id AS jobid,
+        JV.id AS vacancieid,
+        JV.post_name AS postname,
+        JV.total_vacancies AS vacancies,
+        JV.eligibility,
+        JV.age_limit AS age,
+        JV.salary,
+        JV.category
+      FROM job_vacancies JV
+      WHERE JV.job_id IN (?)`,
+      [jobIds]
+    );
+
+    // 8. Format each job with related details
+    const formattedJobs = JobData.map((job) => {
+      const currentJobId = job.jobdataid;
+
+      return {
+        maindata: job,
+
+        importantDates: jobDate
+          .filter((date) => date.jobid === currentJobId)
+          .map(({ jobid, ...date }) => date),
+
+        posts: jobVacancies
+          .filter((post) => post.jobid === currentJobId)
+          .map(({ jobid, ...post }) => post),
+
+        officialLinks: jobLink
+          .filter((link) => link.jobid === currentJobId)
+          .map(({ jobid, ...link }) => link),
+      };
+    });
+
+    // 9. Final response
+    return res.status(200).json({
+      success: true,
+      jobs: formattedJobs,
+      pagination: {
+        totalJobs,
+        totalPages,
+        currentPage: page,
+        limit,
+        hasNextPage: page < totalPages,
+        hasPrevPage: page > 1,
+      },
+    });
+
+  } catch (error) {
+    console.log("GetSerchJobDetail Error:", error);
+
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
+    });
+  }
+};
+

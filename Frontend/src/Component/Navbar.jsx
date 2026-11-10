@@ -119,7 +119,7 @@ export default function Navbar () {
     setInstallPrompt(null)
 
     if (result.outcome === 'accepted') {
-      toast.success('App installed successfully!')
+      toast.success('App installing.')
     } else {
       toast.error('User cancelled installation.')
     }

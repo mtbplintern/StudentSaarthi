@@ -20,6 +20,7 @@ import axios from 'axios'
 import { backendurl } from '../config'
 import Loading from '../Component/Loading'
 import Jobmodal from '../Component/Jobmodal'
+import Jobpage from '../Component/Jobpage'
 
 export default function MyJob () {
   const navigate = useNavigate()
@@ -31,10 +32,10 @@ export default function MyJob () {
 
   const [Myjobs, setMyjobs] = useState([])
 
-  const GetMyJob = async () => {
+  const GetMyJobDetail = async () => {
     setLoading(true)
     try {
-      const request = await axios.get(`${backendurl}/job/my-job`)
+      const request = await axios.get(`${backendurl}/job/my-jobdetail`)
 
       if (request.data.success) {
         setMyjobs(request.data.myjobs)
@@ -69,13 +70,14 @@ export default function MyJob () {
   }
 
   useEffect(() => {
-    GetMyJob()
+    GetMyJobDetail()
   }, [])
+  // console.log(Myjobs);
 
   const filteredJobs = Myjobs.filter(job => {
     const matchesSearch =
-      job.job_title.toLowerCase().includes(search.toLowerCase()) ||
-      job.organization_name.toLowerCase().includes(search.toLowerCase())
+      job.maindata.title.toLowerCase().includes(search.toLowerCase()) ||
+      job.maindata.organization.toLowerCase().includes(search.toLowerCase())
 
     const matchesFilter = filter === 'All' || job.status === filter
 
@@ -190,17 +192,28 @@ export default function MyJob () {
 
           <span className='text-xs sm:text-sm text-gray-500 whitespace-nowrap'>
             {filteredJobs.length} Jobs Found
-          </span> 
+          </span>
         </div>
 
         {/* Job Cards */}
 
-        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-7'>
+        {/* <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-7'>
           {filteredJobs.map((job, i) => (
-                       <Jobmodal job={job} key={i} />
-                     ))}
+             <Jobmodal job={job} key={i} />
+          ))} 
+        </div>*/}
+        <div className='flex flex-col justify-center items-center gap-4 sm:gap-5'>
+          {filteredJobs.length > 0 &&
+            filteredJobs.map((job, i) => (
+              <div
+                className='w-full flex flex-col items-center justify-center gap-3'
+                key={i}
+              >
+                <Jobpage finaljobdata={job} jobKey={i + 1} />
+                <div className='border rounded-2xl border-gray-300  w-[90%] md:w-[80%] lg:w-[220mm] '></div>
+              </div>
+            ))}
         </div>
-
         {/* Empty State */}
         {filteredJobs.length === 0 && (
           <div
@@ -307,5 +320,3 @@ function StatCard ({ icon, title, value, color }) {
     </div>
   )
 }
-
- 

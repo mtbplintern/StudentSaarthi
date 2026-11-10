@@ -23,7 +23,7 @@ export default function PostedJob() {
     try {
       if (navigator.share) {
         await navigator.share({
-          title: 'Job Posted Successfully!',
+          title: 'New job update',
           text: 'Check out my newly posted job opportunity.',
           url: jobUrl
         })

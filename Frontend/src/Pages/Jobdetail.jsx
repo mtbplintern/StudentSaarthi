@@ -7,6 +7,7 @@ import { backendurl } from '../config'
 import toast from 'react-hot-toast'
 import { useState } from 'react'
 import Loading from '../Component/Loading'
+import Jobpage from '../Component/Jobpage'
 
 export default function Jobdetail () {
   const { jobid } = useParams()
@@ -41,7 +42,10 @@ export default function Jobdetail () {
   ) : (
     <div className='flex justify-center items-center   bg-gray-50 min-h-[93vh]'>
       {Object.keys(Jobdata).length > 0 ? (
-        <JobPreview finaljobdata={Jobdata} accessby={'candidate'} />
+        < >
+        {/* <JobPreview finaljobdata={Jobdata} accessby={'candidate'} /> */}
+        <Jobpage finaljobdata={Jobdata} accessby={'candidate'} />
+        </>
       ) : (
         <div className='fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4'>
           <div className='relative w-full max-w-5xl items-center  rounded-2xl shadow-xl overflow-hidden flex flex-col max-h-[90vh]     '>

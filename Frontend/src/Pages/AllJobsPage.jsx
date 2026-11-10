@@ -14,15 +14,13 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { backendurl } from '../config'
 import toast from 'react-hot-toast'
-import { useNavigate } from 'react-router-dom'
-import Loading from '../Component/Loading'
-import { IoIosShareAlt } from 'react-icons/io'
-import Jobmodal from '../Component/Jobmodal'
+  
 import { useRef } from 'react'
+import Jobpage from '../Component/Jobpage'
 
 export default function AllJobsPage () {
-  const navigate = useNavigate()
-  const isFirstRender = useRef(true)
+   const isFirstRender = useRef(true)
+  const loadMoreRef = useRef(null)
 
   const [search, setSearch] = useState('')
   const [loading, setLoading] = useState(false)
@@ -33,12 +31,12 @@ export default function AllJobsPage () {
   const [jobType, setJobType] = useState('All Jobs')
   const [Jobs, setJobs] = useState([])
 
-  const GetJobs = async (pageNo = 1) => {
+  const GetJobsDetail = async (pageNo = 1) => {
     try {
       setLoading(true)
 
       const request = await axios.get(
-        `${backendurl}/data/jobs?limit=20&page=${pageNo}`
+        `${backendurl}/data/jobdetail?limit=20&page=${pageNo}`
       )
 
       if (request.data.success) {
@@ -57,10 +55,10 @@ export default function AllJobsPage () {
     }
   }
 
-  const GetSerchJob = async (pageNo = 1) => {
+  const GetSerchJobDetail = async (pageNo = 1) => {
     try {
-setsearchLoading(true)
-      const request = await axios.get(`${backendurl}/data/serch-jobs`, {
+      setsearchLoading(true)
+      const request = await axios.get(`${backendurl}/data/serch-jobsdetail`, {
         params: {
           limit: 20,
           page: pageNo,
@@ -80,23 +78,13 @@ setsearchLoading(true)
     } catch (error) {
       console.log(error)
       toast.error(error?.response?.data?.message || 'Something went wrong')
-    } finally{
+    } finally {
       setsearchLoading(false)
     }
   }
 
-  const filteredJobs = Jobs.filter(job => {
-    const matchesSearch =
-      job?.jobtype?.toLowerCase().includes(search.toLowerCase()) ||
-      job?.job_title?.toLowerCase().includes(search.toLowerCase()) ||
-      job?.location?.toLowerCase().includes(search.toLowerCase()) ||
-      job?.organization_name?.toLowerCase().includes(search.toLowerCase())
-
-    return matchesSearch
-  })
-
   useEffect(() => {
-    GetJobs(1)
+    GetJobsDetail(1)
   }, [])
 
   useEffect(() => {
@@ -106,16 +94,40 @@ setsearchLoading(true)
     }
 
     const timer = setTimeout(() => {
-      GetSerchJob()
+      GetSerchJobDetail(1)
     }, 500)
 
     return () => clearTimeout(timer)
   }, [search, location])
 
-  return loading ? (
-    <Loading />
-  ) : (
-    <div className='sm:max-w-[95%] mx-auto px-6 bg-white py-6  '>
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0].isIntersecting && hasMore && !loading) {
+          GetJobsDetail(page + 1)
+        }
+      },
+      {
+        threshold: 0.5
+      }
+    )
+
+    const currentElement = loadMoreRef.current
+
+    if (currentElement) {
+      observer.observe(currentElement)
+    }
+
+    return () => {
+      if (currentElement) {
+        observer.unobserve(currentElement)
+      }
+      observer.disconnect()
+    }
+  }, [hasMore, loading, page])
+
+  return (
+    <div className='sm:max-w-[95%] min-h-screen mx-auto px-2 sm:px-6 bg-gray-50 py-6  '>
       <div className='bg-white border border-gray-100 rounded-xl p-5 sm:p-7 mb-6 shadow-sm'>
         {/* Heading */}
         <div className='mb-5'>
@@ -144,7 +156,7 @@ setsearchLoading(true)
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder='Job title, skills or company...'
-              className='w-full border border-gray-400 rounded-lg pl-10 pr-3 py-3 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100'
+              className='w-full border border-gray-400 rounded-lg pl-3 sm:pl-10 pr-3 py-3 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100'
             />
           </div>
 
@@ -157,7 +169,7 @@ setsearchLoading(true)
               value={location}
               onChange={e => setLocation(e.target.value)}
               placeholder='City or location'
-              className='w-full border border-gray-400 rounded-lg pl-10 pr-3 py-3 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100'
+              className='w-full border border-gray-400 rounded-lg pl-3 sm:pl-10 pr-3 py-3 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100'
             />
           </div>
 
@@ -168,8 +180,7 @@ setsearchLoading(true)
             className='bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg px-7 py-3 text-sm transition'
           >
             <i className='fas fa-search mr-2'></i>
-            {searchloading ? "Searching" : "Search Jobs"}
-            
+            {searchloading ? 'Searching' : 'Search Jobs'}
           </button>
         </div>
 
@@ -205,22 +216,21 @@ setsearchLoading(true)
       </div>
 
       {/* Job Cards */}
-      <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-5'>
-        {filteredJobs.map((job, i) => (
-          <Jobmodal job={job} key={i} />
-        ))}
+      <div className='flex flex-col justify-center items-center gap-4 sm:gap-5'>
+        {Jobs.length > 0 &&
+          Jobs.map((job, i) => (
+            <div
+              className='w-full flex flex-col items-center justify-center gap-3'
+              key={i}
+            >
+              <Jobpage finaljobdata={job} jobKey={i + 1} />
+              <div className='border rounded-2xl border-gray-300  w-[90%] md:w-[80%] lg:w-[220mm] '></div>
+            </div>
+          ))}
       </div>
 
-      {hasMore && (
-        <button
-          onClick={() => GetJobs(page + 1)}
-          className='cursor-pointer justify-end mt-10 w-full hidden sm:flex items-center gap-2 text-red-600 font-semibold'
-        >
-          {loading ? 'Loading...' : '  Lode more Jobs'} <ArrowRight size={18} />
-        </button>
-      )}
-      {/* Empty State */}
-      {Jobs.length === 0 && (
+     
+      {!loading && Jobs.length === 0 && (
         <div
           className='bg-white rounded-xl sm:rounded-2xl border
       border-gray-100 p-6 sm:p-16 text-center'
@@ -239,6 +249,25 @@ setsearchLoading(true)
           <p className='text-gray-500 text-sm mt-2'>
             No jobs match your search. Try another keyword .
           </p>
+        </div>
+      )}
+      {hasMore &&  (
+        <div  ref={loadMoreRef}
+          className='bg-white rounded-xl sm:rounded-2xl border
+      border-gray-100 p-6 sm:p-16 text-center'
+        >
+          <div
+            className='w-14 h-14 sm:w-20 sm:h-20 rounded-full bg-red-50
+        text-red-500 flex items-center justify-center mx-auto mb-4'
+          >
+            <BriefcaseBusiness size={28} />
+          </div>
+
+          <h3 className='text-lg sm:text-xl font-bold text-gray-900'>
+          {loading ? 'Loading job...' : 'Scroll to load more jobs'}
+          </h3>
+
+          
         </div>
       )}
     </div>

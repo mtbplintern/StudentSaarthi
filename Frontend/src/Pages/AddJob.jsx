@@ -21,6 +21,7 @@ import { backendurl } from '../config'
 import toast from 'react-hot-toast'
 import axios from 'axios'
 import JobPriview from '../Component/JobPriview'
+import Jobpage from '../Component/Jobpage'
 
 export default function AddJob ({ dbjobdata, accessfor }) {
   const navigate = useNavigate()
@@ -167,7 +168,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
 
   // Handle Form Submission
   const [ShowPriview, setShowPriview] = useState(false)
- 
+
   const handleSubmit = e => {
     e.preventDefault()
 
@@ -183,18 +184,16 @@ export default function AddJob ({ dbjobdata, accessfor }) {
 
     setShowPriview(true)
   }
-  
 
   useEffect(() => {
     if (dbjobdata) {
       setForm({ ...form, ...dbjobdata.maindata })
       setPosts(dbjobdata.posts)
       setOfficialLinks(dbjobdata.officialLinks)
- 
 
       const formattedDates = dbjobdata?.importantDates?.map(item => {
         if (!item.date) return item
-        
+
         const [day, month, year] = item?.date?.split('-')
 
         return {
@@ -202,8 +201,6 @@ export default function AddJob ({ dbjobdata, accessfor }) {
           date: `${year}-${month}-${day}`
         }
       })
-      
-      
 
       setImportantDates(formattedDates)
     }
@@ -221,8 +218,6 @@ export default function AddJob ({ dbjobdata, accessfor }) {
     <div className='min-h-screen bg-white text-gray-900 w-full'>
       {/* Hero Section */}
       <section className='relative overflow-hidden   '>
-   
-
         <div className='relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8'>
           <p
             onClick={() => navigate(-1)}
@@ -271,16 +266,19 @@ export default function AddJob ({ dbjobdata, accessfor }) {
         </div>
       </section>
 
-<div className='border border-gray-100' />
+      <div className='border border-gray-100' />
 
       {/* Main Form */}
       <section className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8  py-12'>
         {ShowPriview && (
-          <div className='fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-3 sm:p-4'>
-            <JobPriview
-              setShowPriview={setShowPriview}
-              finaljobdata={finaljobdata}
-            />
+          <div className='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4'>
+            <div className='relative w-full max-w-[210mm] h-[95dvh] max-h-[95dvh] overflow-y-auto overflow-x-hidden scrollbar-none rounded-xl bg-white shadow-2xl'>
+              <Jobpage
+                setShowPriview={setShowPriview}
+                finaljobdata={finaljobdata}
+      
+              />
+            </div>
           </div>
         )}
 
@@ -339,7 +337,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                       className={inputStyle}
                     />
                   </div>
-                  <div>
+                  {/* <div>
                     <label className={labelStyle}>Job Location </label>
                     <div className='relative'>
                       <MapPin
@@ -348,7 +346,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                       />
                       <input
                         name='location'
-                        value={form?.location || ""}
+                        value={form?.location || ''}
                         onChange={handleChange}
                         placeholder='e.g. Gurgaon, India'
                         className={`${inputStyle} pl-11`}
@@ -365,7 +363,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                       <input
                         name='applicationfee'
                         type='number'
-                        value={form?.applicationfee || 0}
+                        value={form?.applicationfee }
                         onChange={handleChange}
                         min='0'
                         placeholder='e.g. 500'
@@ -390,7 +388,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                         )
                       })}
                     </select>
-                  </div>
+                  </div> */}
                   {/* <div>
                     <label className={labelStyle}>Job Status *</label>
                     <select
@@ -451,7 +449,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                         <label className={labelStyle}>Select Date *</label>
                         <input
                           type='date'
-                          value={item?.date || ""}
+                          value={item?.date || ''}
                           onChange={e =>
                             handleDateChange(i, 'date', e.target.value)
                           }
@@ -607,7 +605,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                   <label className={labelStyle}>Job Description </label>
                   <textarea
                     name='description'
-                    value={form?.description || ""}
+                    value={form?.description || ''}
                     onChange={handleChange}
                     rows={4}
                     placeholder='Describe the job role, responsibilities and daily tasks...'
@@ -619,7 +617,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                   <label className={labelStyle}> Instructions</label>
                   <textarea
                     name='instructions'
-                    value={form.instructions || ""}
+                    value={form.instructions || ''}
                     onChange={handleChange}
                     rows={4}
                     placeholder='Enter any  instructions or important information for applicants...'
@@ -736,7 +734,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                   <input
                     type='email'
                     name='contactemail'
-                    value={form.contactemail || ""}
+                    value={form.contactemail || ''}
                     onChange={handleChange}
                     placeholder='hr@organization.com'
                     className={inputStyle}
