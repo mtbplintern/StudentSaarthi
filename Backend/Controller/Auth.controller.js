@@ -96,7 +96,7 @@ export const Verifyotp = async (req, res) => {
 };
 
 export const RegisterUser = async (req, res) => {
-  return
+  return;
   const { Username, Email, Phone, Password } = req.body;
 
   if (!Username || !Email || !Phone || !Password)
@@ -138,7 +138,7 @@ export const RegisterUser = async (req, res) => {
     const token = jwt.sign(Paylode, jwtkey, { expiresIn: "7d" });
 
     if (token) {
-          res.cookie("token", token, {
+      res.cookie("token", token, {
         httpOnly: true,
         secure: true,
         sameSite: "none",
@@ -251,13 +251,24 @@ export const Userdata = async (req, res) => {
 
 export const LogoutUser = async (req, res) => {
   try {
-    await res.clearCookie("token");
-    res.status(200).json({ success: true, message: "Logout success" });
+    res.clearCookie("token", {
+      httpOnly: true,
+      secure: true,
+      sameSite: "none",
+      domain: "https://student-saarthi-ten.vercel.app",
+      path: "/",
+    });
+
+    return res.status(200).json({
+      success: true,
+      message: "Logout success",
+    });
   } catch (error) {
     console.log(error);
-    res.status(404).json({
+
+    return res.status(500).json({
       success: false,
-      message: "server error",
+      message: "Server error",
     });
   }
 };
