@@ -45,11 +45,8 @@ export default function Webpage () {
   ) : (
     <div className='min-h-screen   text-gray-800'>
       <section className=' '>
-        <div className='sm:max-w-[90%] mx-auto px-6 py-8 sm:py-15 text-center'>
-          <span className='inline-block bg-red-100 text-red-700 px-4 py-2 rounded-full text-sm font-semibold mb-4 sm:mb-6'>
-            🚀 Find your dream job today
-          </span>
-
+        <div className='sm:max-w-[90%] mx-auto px-6 py-6 sm:py-10 text-center'>
+         
           <h1 className='text-3xl md:text-5xl font-bold leading-tight max-w-4xl mx-auto'>
             Find the job that
             <span className='text-red-600'> fits your life.</span>
@@ -65,24 +62,24 @@ export default function Webpage () {
       <div className='border-2 border-gray-100' />
 
       {/* Featured Jobs */}
-      <section id='jobs' className='bg-white py-10 sm:py-15'>
+      <section id='jobs' className='bg-white py-6 sm:py-15'>
         <div className='xl:max-w-[90%] mx-auto sm:px-6 px-3'>
-          <div className='flex sm:flex-row flex-col justify-between items-end mb-6 sm:mb-10'>
+          <div className='flex sm:flex-row flex-col justify-between   mb-5 sm:mb-10'>
             <div>
-              <p className='text-red-600 font-semibold text-sm'>
+              <p className='text-red-600 font-semibold text-sm  sm:block hidden'>
                 FEATURED JOBS
               </p>
-              <h2 className='sm:text-3xl text-2xl font-bold mt-2'>
+              <h2 className='sm:text-3xl text-xl font-bold md:mt-2'>
                 Latest Job Openings
               </h2>
-              <p className='text-gray-500 mt-2'>
+              <p className='text-gray-500 mt-2  sm:block hidden'>
                 Discover exciting opportunities from top companies.
               </p>
             </div>
 
             <button
               onClick={() => navigate('/all-job')}
-              className=' flex items-center gap-2 text-red-600 font-semibold'
+              className=' flex items-center gap-2 text-red-600 font-semibold self-end'
             >
               {loading ? 'Loading...' : '  View all Jobs'}{' '}
               <ArrowRight size={18} />

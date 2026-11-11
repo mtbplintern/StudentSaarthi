@@ -14,12 +14,12 @@ import { useEffect } from 'react'
 import { useState } from 'react'
 import { backendurl } from '../config'
 import toast from 'react-hot-toast'
-  
+
 import { useRef } from 'react'
 import Jobpage from '../Component/Jobpage'
 
 export default function AllJobsPage () {
-   const isFirstRender = useRef(true)
+  const isFirstRender = useRef(true)
   const loadMoreRef = useRef(null)
 
   const [search, setSearch] = useState('')
@@ -127,7 +127,7 @@ export default function AllJobsPage () {
   }, [hasMore, loading, page])
 
   return (
-    <div className='sm:max-w-[95%] min-h-screen mx-auto px-2 sm:px-6 bg-gray-50 py-6  '>
+    <div className='sm:max-w-[95%] min-h-screen mx-auto px-2 sm:px-6 bg-gray-50 py-4  '>
       <div className='bg-white border border-gray-100 rounded-xl p-5 sm:p-7 mb-6 shadow-sm'>
         {/* Heading */}
         <div className='mb-5'>
@@ -156,7 +156,7 @@ export default function AllJobsPage () {
               value={search}
               onChange={e => setSearch(e.target.value)}
               placeholder='Job title, skills or company...'
-              className='w-full border border-gray-400 rounded-lg pl-3 sm:pl-10 pr-3 py-3 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100'
+              className='w-full border border-gray-400 rounded-lg pl-3 sm:pl-10 pr-3 sm:py-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100'
             />
           </div>
 
@@ -169,7 +169,7 @@ export default function AllJobsPage () {
               value={location}
               onChange={e => setLocation(e.target.value)}
               placeholder='City or location'
-              className='w-full border border-gray-400 rounded-lg pl-3 sm:pl-10 pr-3 py-3 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100'
+              className='w-full border border-gray-400 rounded-lg pl-3 sm:pl-10 pr-3 sm:py-3 py-2 text-sm outline-none focus:border-red-500 focus:ring-2 focus:ring-red-100'
             />
           </div>
 
@@ -177,15 +177,14 @@ export default function AllJobsPage () {
             onClick={() => {
               GetSerchJob()
             }}
-            className='bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg px-7 py-3 text-sm transition'
+            className='bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg px-7 sm:py-3 py-2 text-sm transition'
           >
             <i className='fas fa-search mr-2'></i>
             {searchloading ? 'Searching' : 'Search Jobs'}
           </button>
         </div>
-
         {/* Job Type Filters */}
-        <div className='hidden sm:flex flex-wrap items-center gap-2 mt-4'>
+        {/* <div className='hidden sm:flex flex-wrap items-center gap-2 mt-4'>
           <span className='text-sm text-gray-500 font-medium mr-1'>
             Job Type:
           </span>
@@ -212,8 +211,10 @@ export default function AllJobsPage () {
               {type}
             </button>
           ))}
-        </div>
+        </div> */}
       </div>
+
+       <div className='border border-gray-300 w-full mb-2' />
 
       {/* Job Cards */}
       <div className='flex flex-col justify-center items-center gap-4 sm:gap-5'>
@@ -229,7 +230,6 @@ export default function AllJobsPage () {
           ))}
       </div>
 
-     
       {!loading && Jobs.length === 0 && (
         <div
           className='bg-white rounded-xl sm:rounded-2xl border
@@ -251,8 +251,9 @@ export default function AllJobsPage () {
           </p>
         </div>
       )}
-      {hasMore &&  (
-        <div  ref={loadMoreRef}
+      {hasMore && (
+        <div
+          ref={loadMoreRef}
           className='bg-white rounded-xl sm:rounded-2xl border
       border-gray-100 p-6 sm:p-16 text-center'
         >
@@ -264,10 +265,8 @@ export default function AllJobsPage () {
           </div>
 
           <h3 className='text-lg sm:text-xl font-bold text-gray-900'>
-          {loading ? 'Loading job...' : 'Scroll to load more jobs'}
+            {loading ? 'Loading job...' : 'Scroll to load more jobs'}
           </h3>
-
-          
         </div>
       )}
     </div>
