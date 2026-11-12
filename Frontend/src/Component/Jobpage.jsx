@@ -5,15 +5,21 @@ import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { backendurl } from '../config'
 import toast from 'react-hot-toast'
-import { IoIosShareAlt } from 'react-icons/io'
+import { IoIosShareAlt, IoLogoEuro } from 'react-icons/io'
 
-export default function Jobpage ({ finaljobdata, jobKey, setShowPriview }) {
+export default function Jobpage ({
+  finaljobdata,
+  jobKey,
+  setShowPriview,
+  setMyjobs
+}) {
   const [data, setdata] = useState({})
   const Editingdata = location.pathname.includes('/edit-job/')
   const Addjobpage = location.pathname.includes('/add-jobs')
   const Myjobpage = location.pathname.includes('/my-jobs')
   const [Loading, setLoading] = useState(false)
   const navigate = useNavigate()
+  const [showDelete, setShowDelete] = useState('')
 
   useEffect(() => {
     if (finaljobdata) {
@@ -80,6 +86,27 @@ export default function Jobpage ({ finaljobdata, jobKey, setShowPriview }) {
       console.log(error)
       setLoading(false)
       toast.error(error?.response?.data?.message || 'Something went wrong')
+    }
+  }
+  const DeleteJob = async () => {
+    const jobid = showDelete
+    if (!Number(jobid)) return
+
+    try {
+      const request = await axios.delete(
+        `${backendurl}/job/delete-job/${jobid}`
+      )
+
+      if (request.data.success) {
+        toast.success(request.data.message)
+        setMyjobs(prev => prev.filter(job => job.maindata.jobdataid != jobid))
+        setShowDelete('')
+      }
+    } catch (error) {
+      console.log(error)
+
+      toast.error(error?.response?.data?.message || 'Something went wrong')
+      setShowDelete('')
     }
   }
   return (
@@ -279,9 +306,8 @@ export default function Jobpage ({ finaljobdata, jobKey, setShowPriview }) {
         </Section>
       )}
 
- 
       {Myjobpage && (
-                <Section title='Action'>
+        <Section title='Action'>
           <div className='grid grid-cols-[1fr_auto_auto] sm:flex items-center gap-2'>
             {/* Edit Button */}
             <button
@@ -340,6 +366,42 @@ export default function Jobpage ({ finaljobdata, jobKey, setShowPriview }) {
             </button>
           </div>
         </Section>
+      )}
+      {showDelete && (
+        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
+          <div className='w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl'>
+            <div className='flex flex-col items-center text-center'>
+              <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
+                <Trash2 className='h-8 w-8 text-red-600' />
+              </div>
+
+              <h2 className='text-xl font-bold text-gray-900'>Delete Job?</h2>
+
+              <p className='mt-2 text-sm text-gray-500'>
+                Are you sure you want to delete this job? This action cannot be
+                undone.
+              </p>
+            </div>
+
+            <div className='mt-6 flex gap-3'>
+              <button
+                onClick={() => setShowDelete('')}
+                className='w-full rounded-lg bg-gray-100 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-200'
+              >
+                Cancel
+              </button>
+
+              <button
+                onClick={() => {
+                  DeleteJob()
+                }}
+                className='w-full rounded-lg bg-red-600 px-4 py-3 font-semibold text-white hover:bg-red-700'
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   )

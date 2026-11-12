@@ -315,7 +315,7 @@ export const GetMyJobDetail = async (req, res) => {
     if (JobData.length === 0) {
       return res.status(200).json({
         success: true,
-        jobs: [],
+        myjobs: [],
         
       });
     }

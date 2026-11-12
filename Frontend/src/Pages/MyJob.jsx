@@ -28,7 +28,6 @@ export default function MyJob () {
 
   const [search, setSearch] = useState('')
   const [filter, setFilter] = useState('All')
-  const [showDelete, setShowDelete] = useState('')
 
   const [Myjobs, setMyjobs] = useState([])
 
@@ -39,6 +38,8 @@ export default function MyJob () {
 
       if (request.data.success) {
         setMyjobs(request.data.myjobs)
+        console.log(request.data);
+        
         setLoading(false)
       }
     } catch (error) {
@@ -49,30 +50,11 @@ export default function MyJob () {
     }
   }
 
-  const DeleteJob = async () => {
-    const jobid = showDelete
-    if (!Number(jobid)) return
-
-    try {
-      const request = await axios.delete(
-        `${backendurl}/job/delete-job/${jobid}`
-      )
-
-      if (request.data.success) {
-        toast.success(request.data.message)
-        setMyjobs(prev => prev.filter(job => job.jobdataid != jobid))
-        setShowDelete('')
-      }
-    } catch (error) {
-      toast.error(error?.response?.data?.message || 'Something went wrong')
-      setShowDelete('')
-    }
-  }
-
   useEffect(() => {
     GetMyJobDetail()
   }, [])
-  // console.log(Myjobs);
+  console.log(Myjobs);
+  
 
   const filteredJobs = Myjobs.filter(job => {
     const matchesSearch =
@@ -187,7 +169,7 @@ export default function MyJob () {
         {/* Job List Heading */}
         <div className='flex items-center justify-between gap-2 mb-4'>
           <h2 className='text-lg sm:text-xl font-bold text-gray-900'>
-            Your Job Postings
+            Your Jobs
           </h2>
 
           <span className='text-xs sm:text-sm text-gray-500 whitespace-nowrap'>
@@ -209,7 +191,7 @@ export default function MyJob () {
                 className='w-full flex flex-col items-center justify-center gap-3'
                 key={i}
               >
-                <Jobpage finaljobdata={job} jobKey={i + 1} />
+                <Jobpage finaljobdata={job} jobKey={i + 1} setMyjobs={setMyjobs} />
                 <div className='border rounded-2xl border-gray-300  w-[90%] md:w-[80%] lg:w-[220mm] '></div>
               </div>
             ))}
@@ -246,43 +228,6 @@ export default function MyJob () {
           </div>
         )}
       </div>
-
-      {showDelete && (
-        <div className='fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4'>
-          <div className='w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl'>
-            <div className='flex flex-col items-center text-center'>
-              <div className='mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100'>
-                <Trash2 className='h-8 w-8 text-red-600' />
-              </div>
-
-              <h2 className='text-xl font-bold text-gray-900'>Delete Job?</h2>
-
-              <p className='mt-2 text-sm text-gray-500'>
-                Are you sure you want to delete this job? This action cannot be
-                undone.
-              </p>
-            </div>
-
-            <div className='mt-6 flex gap-3'>
-              <button
-                onClick={() => setShowDelete('')}
-                className='w-full rounded-lg bg-gray-100 px-4 py-3 font-semibold text-gray-700 hover:bg-gray-200'
-              >
-                Cancel
-              </button>
-
-              <button
-                onClick={() => {
-                  DeleteJob()
-                }}
-                className='w-full rounded-lg bg-red-600 px-4 py-3 font-semibold text-white hover:bg-red-700'
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   )
 }
