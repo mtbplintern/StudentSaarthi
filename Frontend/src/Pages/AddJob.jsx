@@ -83,9 +83,9 @@ export default function AddJob ({ dbjobdata, accessfor }) {
   // Important Dates
 
   const [importantDates, setImportantDates] = useState([
-    { title: 'Application Start Date', date: '' },
-    { title: 'Application Last Date', date: '' }
-    // {   title: 'Fee Last Date', date: '' }
+    { title: 'Opening Date', date: '' },
+    { title: 'Last Date', date: '' },
+    {   title: 'Fee Last Date', date: '' }
   ])
 
   const addDate = () => {
@@ -148,8 +148,9 @@ export default function AddJob ({ dbjobdata, accessfor }) {
   //  Official Links & Documents
 
   const [officialLinks, setOfficialLinks] = useState([
+    { title: 'Apply Online', url: '' },
+    { title: 'Official Website Link', url: '' },
     { title: 'Official Notification', url: '' },
-    { title: 'Apply Online', url: '' }
   ])
 
   const addOfficialLink = () => {
@@ -269,10 +270,10 @@ export default function AddJob ({ dbjobdata, accessfor }) {
       <div className='border border-gray-100' />
 
       {/* Main Form */}
-      <section className='max-w-6xl mx-auto px-4 sm:px-6 lg:px-8  py-12'>
+      <section className='max-w-6xl mx-auto px-2 sm:px-6 lg:px-8  py-12'>
         {ShowPriview && (
           <div className='fixed inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-2 sm:p-4'>
-            <div className='relative w-full max-w-[210mm] h-[95dvh] max-h-[95dvh] overflow-y-auto overflow-x-hidden scrollbar-none rounded-xl bg-white shadow-2xl'>
+            <div className='relative w-full max-w-[210mm] h-[95dvh] max-h-[95dvh] overflow-y-auto overflow-x-hidden scrollbar-none rounded-xl bg-white shadow-2xl  flex'>
               <Jobpage
                 setShowPriview={setShowPriview}
                 finaljobdata={finaljobdata}
@@ -288,7 +289,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
             className='bg-white border border-gray-100 rounded-3xl shadow-[0_10px_50px_rgba(0,0,0,0.1)] overflow-hidden'
           >
             {/* Form Header */}
-            <div className='px-6 sm:px-10 py-7 border-b border-gray-100 bg-gray-50/70'>
+            <div className='px-6 sm:px-10 py-7 border-b border-gray-100 bg-gray-200'>
               <h2 className='text-xl sm:text-2xl font-extrabold'>
                 Job Information
               </h2>
@@ -297,16 +298,16 @@ export default function AddJob ({ dbjobdata, accessfor }) {
               </p>
             </div>
 
-            <div className='p-6 sm:p-10'>
+            <div className='p-4 sm:p-10'>
               {/* Organization Details */}
-              <div className='mb-10'>
+              <div className=''>
                 <div className='flex items-center gap-4 mb-7'>
                   <div className='w-11 h-11 bg-red-600 text-white  rounded-xl flex items-center justify-center'>
                     <Building2 size={22} />
                   </div>
                   <div>
                     <h3 className='text-lg sm:text-xl font-bold'>
-                      Organization & Job Details
+                       Department Details
                     </h3>
                     <p className='text-xs sm:text-sm text-gray-400 mt-1'>
                       Basic information about your job opening.
@@ -314,26 +315,26 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                   </div>
                 </div>
 
-                <div className='grid grid-cols-1 md:grid-cols-2 gap-x-7 gap-y-6'>
-                  <div>
-                    <label className={labelStyle}>Job Title *</label>
+                <div className='grid grid-cols-1   gap-x-7 gap-y-6'>
+                  {/* <div>
+                    <label className={labelStyle}>Name of Department *</label>
                     <input
                       name='title'
                       value={form.title}
                       onChange={handleChange}
                       required
-                      placeholder='e.g. Frontend Developer'
+                      placeholder='e.g. ssc , bank'
                       className={inputStyle}
                     />
-                  </div>
+                  </div> */}
                   <div>
-                    <label className={labelStyle}>Organization Name *</label>
+                    <label className={labelStyle}>Name of Department*</label>
                     <input
                       name='organization'
                       value={form.organization}
                       onChange={handleChange}
                       required
-                      placeholder='Enter organization name'
+                      placeholder='e.g. ssc , bank'
                       className={inputStyle}
                     />
                   </div>
@@ -405,7 +406,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                 </div>
               </div>
 
-              <div className='border-t border-gray-100 my-10' />
+              <div className='border-t border-gray-100 my-8' />
 
               {/* Date Details */}
 
@@ -428,7 +429,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                   {importantDates.map((item, i) => (
                     <div
                       key={i}
-                      className='grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4 items-end border p-4 rounded-xl'
+                      className='relative grid grid-cols-1 md:grid-cols-[1fr_1fr_auto] gap-4 items-end border p-4 rounded-xl'
                     >
                       <div>
                         <label className={labelStyle}>Date Title </label>
@@ -445,7 +446,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                         />
                       </div>
 
-                      <div>
+                      <div >
                         <label className={labelStyle}>Select Date *</label>
                         <input
                           type='date'
@@ -461,7 +462,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                         <button
                           type='button'
                           onClick={() => removeDate(i)}
-                          className=' text-red-600   p-3 rounded-lg hover:text-white hover:bg-red-600 w-fit'
+                          className='absolute top-1 right-3 text-red-600   p-3 rounded-lg hover:text-white hover:bg-red-600 w-fit'
                         >
                           <Trash2 size={18} />
                         </button>
@@ -473,14 +474,14 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                 <button
                   type='button'
                   onClick={addDate}
-                  className='mt-5 flex items-center gap-2 rounded-lg bg-red-600 px-5 py-3 text-white font-semibold hover:bg-red-700 transition'
+                  className='mt-5 flex-end flex items-center gap-2 rounded-lg bg-red-600 px-5 py-3 text-white font-semibold hover:bg-red-700 transition'
                 >
                   <Plus size={18} />
                   Add More Date
                 </button>
               </div>
 
-              <div className='border-t border-gray-100 my-10' />
+              <div className='border-t border-gray-100 my-8' />
 
               {/* Post Wise Vacancy Details */}
               <div className='mb-10'>
@@ -531,12 +532,12 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                         {/* Input fields */}
                         <div className='grid grid-cols-1 gap-4 p-4 sm:grid-cols-2 lg:grid-cols-3'>
                           {[
-                            ['postname', 'Post Name *', 'e.g. Clerk'],
-                            ['vacancies', 'Vacancies', 'e.g. 100'],
+                            ['postname', 'Name of Post *', 'e.g. Clerk'],
+                            ['vacancies', 'Total Post', 'e.g. 100'],
                             ['eligibility', 'Eligibility', 'e.g. Graduate'],
-                            ['age', 'Age Limit', 'e.g. 18-27 Years'],
-                            ['salary', 'Salary', 'e.g. ₹25,000'],
-                            ['category', 'Category', 'e.g. General']
+                            // ['age', 'Age Limit', 'e.g. 18-27 Years'],
+                            // ['salary', 'Salary', 'e.g. ₹25,000'],
+                            // ['category', 'Category', 'e.g. General']
                           ].map(([field, label, placeholder], i) => (
                             <div key={field} className='min-w-0'>
                               <label className='mb-1.5 block text-sm font-medium text-gray-700'>
@@ -568,10 +569,6 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                 </div>
 
                 <div className='flex flex-wrap items-center justify-between gap-3 mt-4'>
-                  <p className='text-sm text-gray-500'>
-                    Total Posts: <b className='text-red-600'>{posts.length}</b>
-                  </p>
-
                   <button
                     type='button'
                     onClick={addPost}
@@ -580,53 +577,16 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                     <Plus size={18} />
                     Add More Post
                   </button>
+                  <p className='text-sm text-gray-500'>
+                    Total Posts: <b className='text-red-600'>{posts.length}</b>
+                  </p>
+
                 </div>
               </div>
 
-              <div className='border-t border-gray-100 my-10' />
+           
 
-              {/* Description */}
-              <div className='mb-10'>
-                <div className='flex items-center gap-4 mb-7'>
-                  <div className='w-11 h-11 bg-red-600 text-white rounded-xl flex items-center justify-center'>
-                    <FileText size={22} />
-                  </div>
-                  <div>
-                    <h3 className='text-lg sm:text-xl font-bold'>
-                      Job Description
-                    </h3>
-                    <p className='text-xs sm:text-sm text-gray-400 mt-1'>
-                      Explain the role and candidate expectations.
-                    </p>
-                  </div>
-                </div>
-
-                <div className='mb-7'>
-                  <label className={labelStyle}>Job Description </label>
-                  <textarea
-                    name='description'
-                    value={form?.description || ''}
-                    onChange={handleChange}
-                    rows={4}
-                    placeholder='Describe the job role, responsibilities and daily tasks...'
-                    className={`${inputStyle} resize-y `}
-                  />
-                </div>
-
-                <div>
-                  <label className={labelStyle}> Instructions</label>
-                  <textarea
-                    name='instructions'
-                    value={form.instructions || ''}
-                    onChange={handleChange}
-                    rows={4}
-                    placeholder='Enter any  instructions or important information for applicants...'
-                    className={`${inputStyle} resize-y`}
-                  />
-                </div>
-              </div>
-
-              <div className='border-t border-gray-100 my-10' />
+              <div className='border-t border-gray-100 my-8' />
 
               {/* Official Links & Documents */}
               <div className='mb-10'>
@@ -711,10 +671,53 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                 </button>
               </div>
 
-              <div className='border-t border-gray-100 my-10' />
+                 <div className='border-t border-gray-100 my-8' />
+
+              {/* Description */}
+              <div className='mb-7'>
+                <div className='flex items-center gap-4 mb-7'>
+                  <div className='w-11 h-11 bg-red-600 text-white rounded-xl flex items-center justify-center'>
+                    <FileText size={22} />
+                  </div>
+                  <div>
+                    <h3 className='text-lg sm:text-xl font-bold'>
+                      Note
+                    </h3>
+                    <p className='text-xs sm:text-sm text-gray-400 mt-1'>
+                      Explain the role and candidate expectations.
+                    </p>
+                  </div>
+                </div>
+{/* 
+                <div className='mb-7'>
+                  <label className={labelStyle}>Job Description </label>
+                  <textarea
+                    name='description'
+                    value={form?.description || ''}
+                    onChange={handleChange}
+                    rows={4}
+                    placeholder='Describe the job role, responsibilities and daily tasks...'
+                    className={`${inputStyle} resize-y `}
+                  />
+                </div> */}
+
+                <div>
+                  <label className={labelStyle}> Note</label>
+                  <textarea
+                    name='instructions'
+                    value={form.instructions || ''}
+                    onChange={handleChange}
+                    rows={2}
+                    placeholder='Enter any  instructions or important information for applicants...'
+                    className={`${inputStyle} resize-y`}
+                  />
+                </div>
+              </div>
+
+              {/* <div className='border-t border-gray-100 my-10' /> */}
 
               {/* Contact Details */}
-              <div className='mb-8'>
+              {/* <div className='mb-8'>
                 <div className='flex items-center gap-4 mb-7'>
                   <div className='w-11 h-11 bg-red-600 text-white rounded-xl flex items-center justify-center'>
                     <Clock size={22} />
@@ -740,10 +743,10 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                     className={inputStyle}
                   />
                 </div>
-              </div>
+              </div> */}
 
               {/* Submit */}
-              <div className='border-t border-gray-100 pt-7 flex flex-col sm:flex-row sm:items-center justify-between gap-5'>
+              <div className='border-t border-gray-100 pt-2 flex flex-col sm:flex-row sm:items-center justify-between gap-5'>
                 <p className='text-sm text-gray-400'>
                   <span className='text-red-600 font-bold'>*</span> Required
                   fields

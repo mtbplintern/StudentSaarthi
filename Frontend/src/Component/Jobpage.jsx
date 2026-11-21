@@ -109,9 +109,10 @@ export default function Jobpage ({
       setShowDelete('')
     }
   }
+   
   return (
     <div
-      className={`w-full md:w-[85%] lg:w-[250mm] max-w-full p-2 space-y-4 sm:p-6 rounded-2xl shadow-xl overflow-hidden flex flex-col border border-gray-100 ${
+      className={`w-full md:w-[85%] lg:w-[250mm] max-w-full p-2 space-y-4 sd:space-y-10 sm:p-6 rounded-2xl shadow-xl overflow-hidden flex flex-col border border-gray-100 ${
         jobKey % 2 == 0 ? 'bg-gray-200' : 'bg-white'
       }`}
     >
@@ -159,22 +160,22 @@ export default function Jobpage ({
           </div>
         ) : (
           <div className='w-full overflow-x-auto bg-white border border-gray-200 rounded-xl shadow-sm'>
-            <table className='w-full min-w-210 table-auto text-left border-collapse'>
+            <table className='w-full min-w-110 sm:min-w-170 table-auto text-left border-collapse'>
               <thead>
                 <tr className='bg-red-50 border-b border-red-100'>
-                  <th className='px-2 sm:px-4 py-2.5 sm:py-3   text-xs font-bold text-red-700 uppercase'>
+                  <th className='px-2 sm:px-4 py-2.5 sm:py-3   text-xs font-bold text-red-700 uppercase w-11'>
                     S.No.
                   </th>
                   <th className='px-2 sm:px-4 py-2.5 sm:py-3  text-xs font-bold text-red-700 uppercase'>
                     Post Name
                   </th>
                   <th className='px-2 sm:px-4 py-2.5 sm:py-3   text-xs font-bold text-red-700 uppercase'>
-                    Vacancies
+                    Total Posts
                   </th>
                   <th className='px-2 sm:px-4 py-2.5 sm:py-3  text-xs font-bold text-red-700 uppercase'>
                     Eligibility
                   </th>
-                  <th className='px-2 sm:px-4 py-2.5 sm:py-3  text-xs font-bold text-red-700 uppercase'>
+                  {/* <th className='px-2 sm:px-4 py-2.5 sm:py-3  text-xs font-bold text-red-700 uppercase'>
                     Age Limit
                   </th>
                   <th className='px-2 sm:px-4 py-2.5 sm:py-3  text-xs font-bold text-red-700 uppercase'>
@@ -182,7 +183,7 @@ export default function Jobpage ({
                   </th>
                   <th className='px-2 sm:px-4 py-2.5 sm:py-3  text-xs font-bold text-red-700 uppercase'>
                     Category
-                  </th>
+                  </th> */}
                 </tr>
               </thead>
 
@@ -192,7 +193,7 @@ export default function Jobpage ({
                     key={index}
                     className='border-b border-gray-100 hover:bg-red-50/40 transition-colors'
                   >
-                    <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-xs font-semibold text-gray-500'>
+                    <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-xs font-semibold text-gray-500 '>
                       {index + 1}
                     </td>
 
@@ -208,7 +209,7 @@ export default function Jobpage ({
                       {post?.eligibility || 'N/A'}
                     </td>
 
-                    <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-xs font-semibold text-gray-700'>
+                    {/* <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-xs font-semibold text-gray-700'>
                       {post?.age || 'N/A'}
                     </td>
 
@@ -218,7 +219,7 @@ export default function Jobpage ({
 
                     <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-xs font-semibold text-gray-700'>
                       {post?.category || 'N/A'}
-                    </td>
+                    </td> */}
                   </tr>
                 ))}
               </tbody>
@@ -227,7 +228,7 @@ export default function Jobpage ({
         )}
       </Section>
 
-      <Section title='Important Links'>
+      <Section title='Links'>
         {officialLinks?.length === 0 ? (
           <p className='text-gray-500 text-xs'>No links provided.</p>
         ) : (
@@ -256,14 +257,14 @@ export default function Jobpage ({
       </Section>
 
       <div className='lg:col-span-2 space-y-4'>
-        <Section title='Instructions for Candidates'>
+        <Section title='Note'>
           <p className='text-gray-600 text-xs sm:text-sm font-semibold leading-relaxed whitespace-pre-line'>
             {maindata?.instructions || 'No specific instructions provided.'}
           </p>
         </Section>
       </div>
 
-      <Section title='Support & Queries'>
+      {/* <Section title='Support & Queries'>
         <p className='text-gray-500 text-[11px] sm:text-sm leading-relaxed'>
           For official assistance regarding this notification:
         </p>
@@ -274,7 +275,7 @@ export default function Jobpage ({
           <FiMail />
           {maindata?.contactemail || 'Not available'}
         </a>
-      </Section>
+      </Section> */}
 
       {(Editingdata || Addjobpage) && (
         <Section title='Action'>
@@ -410,10 +411,12 @@ export default function Jobpage ({
 function Section ({ title, children }) {
   return (
     <div className='  bg-white border border-gray-200 rounded-xl p-4 shadow-2xs'>
-      <h2 className='text-xs sm:text-sm font-bold text-gray-800 border-b border-gray-100 pb-2 mb-3 tracking-tight flex items-center gap-2'>
-        <span className='w-1.5 h-1.5 rounded-full bg-red-600'></span>
-        {title}
-      </h2>
+      {title && (
+        <h2 className='text-xs sm:text-sm font-bold text-gray-800 border-b border-gray-100 pb-2 mb-3 tracking-tight flex items-center gap-2'>
+          <span className='w-1.5 h-1.5 rounded-full bg-red-600'></span>
+          {title}
+        </h2>
+      )}
       {children}
     </div>
   )

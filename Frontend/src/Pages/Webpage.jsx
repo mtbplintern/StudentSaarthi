@@ -93,7 +93,7 @@ export default function Webpage () {
             ))}
           </div> */}
 
-          <div className='flex flex-col justify-center items-center gap-4 sm:gap-5'>
+          <div className='flex flex-col justify-center items-center gap-4 sm:gap-10'>
             {Jobs.length > 0 &&
               Jobs.map((job, i) => (
                 <Jobpage finaljobdata={job} jobKey={i + 1} key={i} />
