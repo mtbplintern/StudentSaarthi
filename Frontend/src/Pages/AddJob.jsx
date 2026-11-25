@@ -85,7 +85,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
   const [importantDates, setImportantDates] = useState([
     { title: 'Opening Date', date: '' },
     { title: 'Last Date', date: '' },
-    {   title: 'Fee Last Date', date: '' }
+    { title: 'Fee Last Date', date: '' }
   ])
 
   const addDate = () => {
@@ -148,9 +148,9 @@ export default function AddJob ({ dbjobdata, accessfor }) {
   //  Official Links & Documents
 
   const [officialLinks, setOfficialLinks] = useState([
-    { title: 'Apply Online', url: '' },
+    { title: 'Apply Online Link', url: '' },
     { title: 'Official Website Link', url: '' },
-    { title: 'Official Notification', url: '' },
+    { title: 'Official Notification PDF', url: '' }
   ])
 
   const addOfficialLink = () => {
@@ -277,7 +277,6 @@ export default function AddJob ({ dbjobdata, accessfor }) {
               <Jobpage
                 setShowPriview={setShowPriview}
                 finaljobdata={finaljobdata}
-      
               />
             </div>
           </div>
@@ -301,7 +300,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
             <div className='p-4 sm:p-10'>
               {/* Organization Details */}
               <div className=''>
-                <div className='flex items-center gap-4 mb-7'>
+                {/* <div className='flex items-center gap-4 mb-7'>
                   <div className='w-11 h-11 bg-red-600 text-white  rounded-xl flex items-center justify-center'>
                     <Building2 size={22} />
                   </div>
@@ -313,7 +312,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                       Basic information about your job opening.
                     </p>
                   </div>
-                </div>
+                </div> */}
 
                 <div className='grid grid-cols-1   gap-x-7 gap-y-6'>
                   {/* <div>
@@ -406,12 +405,12 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                 </div>
               </div>
 
-              <div className='border-t border-gray-100 my-8' />
+              <div className='border-t border-gray-100 my-6' />
 
               {/* Date Details */}
 
               <div className='mb-10'>
-                <div className='flex items-center gap-4 mb-7'>
+                {/* <div className='flex items-center gap-4 mb-7'>
                   <div className='w-11 h-11 bg-red-600 text-white  rounded-xl flex items-center justify-center'>
                     <CalendarDays size={22} />
                   </div>
@@ -423,7 +422,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                       Add all important job application dates
                     </p>
                   </div>
-                </div>
+                </div> */}
 
                 <div className='space-y-4'>
                   {importantDates.map((item, i) => (
@@ -446,7 +445,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                         />
                       </div>
 
-                      <div >
+                      <div>
                         <label className={labelStyle}>Select Date *</label>
                         <input
                           type='date'
@@ -481,7 +480,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                 </button>
               </div>
 
-              <div className='border-t border-gray-100 my-8' />
+              <div className='border-t border-gray-100 my-6' />
 
               {/* Post Wise Vacancy Details */}
               <div className='mb-10'>
@@ -534,7 +533,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                           {[
                             ['postname', 'Name of Post *', 'e.g. Clerk'],
                             ['vacancies', 'Total Post', 'e.g. 100'],
-                            ['eligibility', 'Eligibility', 'e.g. Graduate'],
+                            ['eligibility', 'Eligibility', 'e.g. Graduate']
                             // ['age', 'Age Limit', 'e.g. 18-27 Years'],
                             // ['salary', 'Salary', 'e.g. ₹25,000'],
                             // ['category', 'Category', 'e.g. General']
@@ -580,17 +579,14 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                   <p className='text-sm text-gray-500'>
                     Total Posts: <b className='text-red-600'>{posts.length}</b>
                   </p>
-
                 </div>
               </div>
 
-           
-
-              <div className='border-t border-gray-100 my-8' />
+              <div className='border-t border-gray-100 my-6' />
 
               {/* Official Links & Documents */}
               <div className='mb-10'>
-                <div className='flex items-center gap-4 mb-7'>
+                {/* <div className='flex items-center gap-4 mb-7'>
                   <div className='w-11 h-11 bg-red-600 text-white rounded-xl flex items-center justify-center'>
                     <LinkIcon size={22} />
                   </div>
@@ -603,7 +599,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                       Add official website, application links and important PDFs
                     </p>
                   </div>
-                </div>
+                </div> */}
 
                 <div className='space-y-4'>
                   {officialLinks.map((link, index) => (
@@ -671,11 +667,11 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                 </button>
               </div>
 
-                 <div className='border-t border-gray-100 my-8' />
+              <div className='border-t border-gray-100 my-6' />
 
               {/* Description */}
               <div className='mb-7'>
-                <div className='flex items-center gap-4 mb-7'>
+                {/* <div className='flex items-center gap-4 mb-7'>
                   <div className='w-11 h-11 bg-red-600 text-white rounded-xl flex items-center justify-center'>
                     <FileText size={22} />
                   </div>
@@ -687,8 +683,8 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                       Explain the role and candidate expectations.
                     </p>
                   </div>
-                </div>
-{/* 
+                </div> */}
+                {/* 
                 <div className='mb-7'>
                   <label className={labelStyle}>Job Description </label>
                   <textarea
@@ -701,15 +697,15 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                   />
                 </div> */}
 
-                <div>
-                  <label className={labelStyle}> Note</label>
+                <div className='flex gap-2 items-center'>
+                  <label className={`${labelStyle} w-15`} > Note *</label>
                   <textarea
+                    rows={1}
                     name='instructions'
                     value={form.instructions || ''}
                     onChange={handleChange}
-                    rows={2}
                     placeholder='Enter any  instructions or important information for applicants...'
-                    className={`${inputStyle} resize-y`}
+                    className={`${inputStyle} resize-y `}
                   />
                 </div>
               </div>

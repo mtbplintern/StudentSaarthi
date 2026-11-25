@@ -109,10 +109,10 @@ export default function Jobpage ({
       setShowDelete('')
     }
   }
-   
+
   return (
     <div
-      className={`w-full md:w-[85%] lg:w-[250mm] max-w-full p-2 space-y-4 sd:space-y-10 sm:p-6 rounded-2xl shadow-xl overflow-hidden flex flex-col border border-gray-100 ${
+      className={`w-full md:w-[85%] lg:w-[250mm] max-w-full p-2 space-y-6 sd:space-y-10 sm:p-6 rounded-2xl shadow-xl overflow-hidden flex flex-col border border-gray-100 ${
         jobKey % 2 == 0 ? 'bg-gray-200' : 'bg-white'
       }`}
     >
@@ -239,7 +239,7 @@ export default function Jobpage ({
                 href={link.url}
                 target='_blank'
                 rel='noopener noreferrer'
-                className='flex items-center justify-between p-2.5 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 text-red-500 hover:text-red-700 font-medium text-xs transition group'
+                className='flex   items-center justify-center p-2.5 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 text-red-500 hover:text-red-700 font-medium text-xs transition group'
               >
                 <div>
                   <span className='block font-semibold'>{link?.title}</span>
@@ -247,9 +247,7 @@ export default function Jobpage ({
                     {link?.type}
                   </span>
                 </div>
-                <span className='text-gray-400 group-hover:text-red-600'>
-                  ↗
-                </span>
+               
               </a>
             ))}
           </div>
@@ -259,7 +257,7 @@ export default function Jobpage ({
       <div className='lg:col-span-2 space-y-4'>
         <Section title='Note'>
           <p className='text-gray-600 text-xs sm:text-sm font-semibold leading-relaxed whitespace-pre-line'>
-            {maindata?.instructions || 'No specific instructions provided.'}
+           <span className='font-bold mr-1'>Note * </span> {maindata?.instructions || 'No specific instructions provided.'}
           </p>
         </Section>
       </div>
@@ -410,13 +408,13 @@ export default function Jobpage ({
 
 function Section ({ title, children }) {
   return (
-    <div className='  bg-white border border-gray-200 rounded-xl p-4 shadow-2xs'>
-      {title && (
+    <div className='  bg-white border border-gray-200 rounded-xl p-2 shadow-2xs'>
+      {/* {title && (
         <h2 className='text-xs sm:text-sm font-bold text-gray-800 border-b border-gray-100 pb-2 mb-3 tracking-tight flex items-center gap-2'>
           <span className='w-1.5 h-1.5 rounded-full bg-red-600'></span>
           {title}
         </h2>
-      )}
+      )} */}
       {children}
     </div>
   )
