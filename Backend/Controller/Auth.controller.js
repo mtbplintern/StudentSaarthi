@@ -94,10 +94,14 @@ export const Verifyotp = async (req, res) => {
     });
   }
 };
-
 export const RegisterUser = async (req, res) => {
   return;
   const { Username, Email, Phone, Password } = req.body;
+  // const Email = "ramkalapunia@gmail.com"
+  // const Password = "123456"
+  // const Username = "Ramkala Punia"
+  // const Phone = null
+  // const roleid = 2
 
   if (!Username || !Email || !Phone || !Password)
     return res.status(422).json({
@@ -118,8 +122,8 @@ export const RegisterUser = async (req, res) => {
     const hashPassword = await bcrypt.hash(Password, 10);
 
     const [insert] = await db.query(
-      `INSERT INTO users (name ,email  ,phone ,password ,roleid) VALUES (?,?,?,?)`,
-      [Username.trim(), Email, Phone, hashPassword],
+      `INSERT INTO users (name ,email  ,phone ,password ,roleid) VALUES (?,?,?,?,?)`,
+      [Username.trim(), Email, Phone, hashPassword, roleid],
     );
 
     const [insertuser] = await db.query(`SELECT * FROM users WHERE id = ?`, [
@@ -262,7 +266,6 @@ export const LogoutUser = async (req, res) => {
       success: true,
       message: "Logout success",
     });
-
   } catch (error) {
     console.log(error);
 

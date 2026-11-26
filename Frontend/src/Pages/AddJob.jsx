@@ -62,7 +62,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
     instructions: '',
     contactemail: '',
     status: 'Published',
-    Pdfname: 'Official Notification PDF',
+    Pdfname: 'Official Notification',
     pdfFile: null
   }
 
@@ -154,8 +154,8 @@ export default function AddJob ({ dbjobdata, accessfor }) {
   //  Official Links & Documents
 
   const [officialLinks, setOfficialLinks] = useState([
-    { title: 'Apply Online Link', url: '' },
-    { title: 'Official Website Link', url: '' }
+    { title: 'Apply Online  ', url: '' },
+    { title: 'Official Website  ', url: '' }
     // { title: 'Official Notification PDF', url: '' }
   ])
 
@@ -719,7 +719,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                       name='Pdfname'
                       value={form?.Pdfname || ''}
                       onChange={handleChange}
-                      placeholder='e.g. Official Notification PDF'
+                      placeholder='e.g. Official Notification  '
                       className={inputStyle}
                     />
                   </div>

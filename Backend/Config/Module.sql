@@ -54,7 +54,7 @@ CREATE TABLE jobs (
     FOREIGN KEY (jobtype_id) REFERENCES jobtype (id)
 );
 
-select * FROM jobs
+select * FROM users
 
 CREATE TABLE job_dates (
     id INT AUTO_INCREMENT PRIMARY KEY,
