@@ -38,8 +38,7 @@ export default function MyJob () {
 
       if (request.data.success) {
         setMyjobs(request.data.myjobs)
-        console.log(request.data);
-        
+         
         setLoading(false)
       }
     } catch (error) {
@@ -53,8 +52,7 @@ export default function MyJob () {
   useEffect(() => {
     GetMyJobDetail()
   }, [])
-  console.log(Myjobs);
-  
+   
 
   const filteredJobs = Myjobs.filter(job => {
     const matchesSearch =
@@ -102,7 +100,7 @@ export default function MyJob () {
           </div>
 
           {/* Stats */}
-          <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4'>
+          {/* <div className='grid grid-cols-2 sm:grid-cols-4 gap-3 mb-4'>
             <StatCard
               icon={<BriefcaseBusiness size={18} />}
               title='Total Jobs'
@@ -116,7 +114,7 @@ export default function MyJob () {
               value={Myjobs.filter(job => job.status === 'Published').length}
               color='green'
             />
-          </div>
+          </div> */}
 
           {/* Search & Filter */}
 

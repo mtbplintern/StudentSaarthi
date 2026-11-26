@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { FiMail } from 'react-icons/fi'
-import { BriefcaseBusiness, Eye, Pencil, Trash2 } from 'lucide-react'
+import { BriefcaseBusiness, Eye, FileText, Pencil, Trash2 } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import axios from 'axios'
 import { backendurl } from '../config'
@@ -18,9 +18,9 @@ export default function Jobpage ({
   const Addjobpage = location.pathname.includes('/add-jobs')
   const Myjobpage = location.pathname.includes('/my-jobs')
   const [Loading, setLoading] = useState(false)
+  const [showPDF, setShowPDF] = useState(false)
   const navigate = useNavigate()
   const [showDelete, setShowDelete] = useState('')
-
   useEffect(() => {
     if (finaljobdata) {
       setdata(finaljobdata)
@@ -37,9 +37,11 @@ export default function Jobpage ({
 
     try {
       setLoading(true)
-      const request = await axios.post(`${backendurl}/job/add-job`, {
-        jobdata: data
-      })
+      const formdata = new FormData()
+
+      formdata.append('jobdata', JSON.stringify(data))
+      formdata.append('pdffile', data?.maindata?.pdfFile)
+      const request = await axios.post(`${backendurl}/job/add-job`, formdata)
 
       if (request.data.success) {
         const postedjobid = request.data.jobId
@@ -58,6 +60,8 @@ export default function Jobpage ({
       console.log(error)
       setLoading(false)
       toast.error(error?.response?.data?.message || 'Something went wrong')
+    } finally {
+      setLoading(false)
     }
   }
 
@@ -67,9 +71,14 @@ export default function Jobpage ({
 
     try {
       setLoading(true)
-      const request = await axios.put(`${backendurl}/job/edit-job/${jobid}`, {
-        jobdata: data
-      })
+      const formdata = new FormData()
+
+      formdata.append('jobdata', JSON.stringify(data))
+      formdata.append('pdffile', data?.maindata?.pdfFile)
+      const request = await axios.put(
+        `${backendurl}/job/edit-job/${jobid}`,
+        formdata
+      )
 
       if (request.data.success) {
         console.log('success')
@@ -140,7 +149,9 @@ export default function Jobpage ({
                 key={item?.id || index}
                 className='flex justify-between items-center md:text-sm text-xs pb-2 border-b border-gray-100 last:border-0 last:pb-0'
               >
-                <span className='text-gray-600 font-medium'>{item?.title}</span>
+                <span className='text-gray-600  text-[16px] font-medium'>
+                  {item?.title}
+                </span>
                 <span className='text-red-700 font-semibold bg-red-50 px-2 py-0.5 rounded'>
                   {item?.date}
                 </span>
@@ -193,19 +204,19 @@ export default function Jobpage ({
                     key={index}
                     className='border-b border-gray-100 hover:bg-red-50/40 transition-colors'
                   >
-                    <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-xs font-semibold text-gray-500 '>
+                    <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-[16px] font-semibold text-gray-500 '>
                       {index + 1}
                     </td>
 
-                    <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-xs font-bold text-gray-900'>
+                    <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-[16px] font-semibold text-gray-900'>
                       {post?.postname || 'N/A'}
                     </td>
 
-                    <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-xs font-bold text-red-600'>
+                    <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-[16px] font-bold text-red-600'>
                       {post?.vacancies || 'N/A'}
                     </td>
 
-                    <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-xs text-gray-600 leading-relaxed whitespace-normal  '>
+                    <td className='px-2 sm:px-4 py-2.5 sm:py-3 text-[16px] text-gray-600 leading-relaxed whitespace-normal  '>
                       {post?.eligibility || 'N/A'}
                     </td>
 
@@ -229,7 +240,7 @@ export default function Jobpage ({
       </Section>
 
       <Section title='Links'>
-        {officialLinks?.length === 0 ? (
+        {officialLinks?.length === 0 && !maindata?.pdfFile ? (
           <p className='text-gray-500 text-xs'>No links provided.</p>
         ) : (
           <div className='space-y-2'>
@@ -242,14 +253,25 @@ export default function Jobpage ({
                 className='flex   items-center justify-center p-2.5 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 text-red-500 hover:text-red-700 font-medium text-xs transition group'
               >
                 <div>
-                  <span className='block font-semibold'>{link?.title}</span>
+                  <span className='block font-semibold text-[16px]'>
+                    {link?.title}
+                  </span>
                   <span className='text-[10px] text-gray-400 group-hover:text-red-500'>
                     {link?.type}
                   </span>
                 </div>
-               
               </a>
             ))}
+            {maindata.pdfFile && (
+              <div
+                onClick={() => setShowPDF(true)}
+                className='flex cursor-pointer items-center justify-center p-2.5 rounded-lg bg-gray-50 hover:bg-red-50 border border-gray-200 text-red-500 hover:text-red-700 font-medium text-xs transition'
+              >
+                <span className='font-semibold  text-[16px]'>
+                  {maindata?.Pdfname}
+                </span>
+              </div>
+            )}
           </div>
         )}
       </Section>
@@ -257,7 +279,8 @@ export default function Jobpage ({
       <div className='lg:col-span-2 space-y-4'>
         <Section title='Note'>
           <p className='text-gray-600 text-xs sm:text-sm font-semibold leading-relaxed whitespace-pre-line'>
-           <span className='font-bold mr-1'>Note * </span> {maindata?.instructions || 'No specific instructions provided.'}
+            <span className='font-bold mr-1'>Note * </span>{' '}
+            {maindata?.instructions || 'No specific instructions provided.'}
           </p>
         </Section>
       </div>
@@ -398,6 +421,88 @@ export default function Jobpage ({
               >
                 Delete
               </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {/* 
+      {showPDF && (
+        <div className='fixed inset-0 z-50 bg-black/70 flex items-center justify-center p-4'>
+          <div className='bg-white w-full max-w-5xl h-[90vh] rounded-xl overflow-hidden'>
+            <div className='flex items-center justify-between p-3 border-b'>
+              <h2 className='font-semibold'>{maindata?.Pdfname}</h2>
+
+              <button
+                onClick={() => setShowPDF(false)}
+                className='text-red-500 font-bold text-xl'
+              >
+                ✕
+              </button>
+            </div>
+
+            <iframe
+              src={maindata.pdfFile}
+              title='PDF Viewer'
+              className='w-full h-[calc(90vh-55px)]'
+            />
+          </div>
+        </div>
+      )} */}
+
+      {showPDF && (
+        <div className='fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-3 sm:p-5'>
+          <div className='bg-white w-full max-w-6xl h-[95vh] rounded-2xl shadow-2xl overflow-hidden flex flex-col'>
+            {/* Header */}
+            <div className='bg-white border-b border-slate-200 px-5 py-4 flex items-center justify-between gap-4'>
+              <div className='flex items-center gap-3 min-w-0'>
+                <div className='bg-red-50 text-red-600 p-3 rounded-xl font-bold'>
+                
+                  <FileText/>
+                </div>
+
+                <div className='min-w-0'>
+                  <h2 className='text-lg sm:text-xl font-bold text-slate-800 truncate'>
+                    {maindata?.Pdfname || 'PDF Document'}
+                  </h2>
+                  <p className='text-xs text-slate-500 mt-1'>
+                    Official Document Viewer
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={() => setShowPDF(false)}
+                className='w-10 h-10 rounded-lg bg-red-50 text-red-600 hover:bg-red-600 hover:text-white flex items-center justify-center transition text-xl font-bold'
+                aria-label='Close PDF viewer'
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* PDF Content */}
+            <div className='flex-1 bg-slate-100 p-2 sm:p-4 min-h-0'>
+              {maindata?.pdfFile ? (
+                <iframe
+                  src={maindata.pdfFile}
+                  title={maindata?.Pdfname || 'PDF Viewer'}
+                  className='w-full h-full rounded-lg border border-slate-200 bg-white shadow-sm'
+                  style={{ minHeight: 0 }}
+                />
+              ) : (
+                <div className='h-full flex flex-col items-center justify-center text-slate-500'>
+                  <p className='text-lg font-semibold'>PDF Not Available</p>
+                  <p className='text-sm mt-2'>
+                    Document link could not be found.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className='bg-white border-t border-slate-200 px-5 py-3 flex items-center justify-between'>
+              <p className='text-xs text-slate-500'>Secure Document Preview</p>
+
+              <p className='text-xs text-slate-400'>PDF Viewer</p>
             </div>
           </div>
         </div>

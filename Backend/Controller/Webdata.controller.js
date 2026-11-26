@@ -159,11 +159,16 @@ export const GetJobDetailbyId = async (req, res) => {
       JD.description as description,
       JD.instructions as instructions,
       JT.name AS jobtype    , 
-      JT.id AS jobtypeId     
+      JT.id AS jobtypeId  ,
+        PD.title as Pdfname,
+        PD.pdf_url as pdfFile,
+        PD.id as pdf_id   
       FROM jobs JD
       LEFT JOIN jobtype JT   ON JD.jobtype_id = JT.id
+            LEFT JOIN pdf_documents PD ON PD.job_id = JD.id and PD.isdeleted = ?
+
       WHERE JD.id = ? and JD.deleted = ? `,
-      [jobid, false],
+      [false , jobid, false],
     );
 
     if (JobData.length == 0)
@@ -253,13 +258,18 @@ export const GetJobDetail = async (req, res) => {
         JD.description,
         JD.instructions,
         JT.name AS jobtype,
-        JT.id AS jobtypeId
+        JT.id AS jobtypeId,
+        PD.title as Pdfname,
+        PD.pdf_url as pdfFile,
+        PD.id as pdf_id
       FROM jobs JD
       LEFT JOIN jobtype JT ON JD.jobtype_id = JT.id
+            LEFT JOIN pdf_documents PD ON PD.job_id = JD.id and PD.isdeleted = ?
+
       WHERE JD.deleted = ?
       ORDER BY JD.id DESC
       LIMIT ? OFFSET ?`,
-      [false, limit, offset],
+      [false ,false, limit, offset],
     );
 
     // 3. If no jobs found
@@ -425,9 +435,14 @@ export const GetSerchJobDetail = async (req, res) => {
         JD.description,
         JD.instructions,
         JT.name AS jobtype,
-        JT.id AS jobtypeId
+        JT.id AS jobtypeId,
+        PD.title as Pdfname,
+        PD.pdf_url as pdfFile,
+        PD.id as pdf_id
       FROM jobs JD
       LEFT JOIN jobtype JT ON JD.jobtype_id = JT.id
+            LEFT JOIN pdf_documents PD ON PD.job_id = JD.id and PD.isdeleted = ?
+
       WHERE
         JD.deleted = ?
         AND JD.status = ?
@@ -441,6 +456,7 @@ export const GetSerchJobDetail = async (req, res) => {
       ORDER BY JD.id DESC
       LIMIT ? OFFSET ?`,
       [
+        false,
         false,
         "Published",
         searchlocation,

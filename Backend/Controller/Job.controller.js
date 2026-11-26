@@ -1,5 +1,5 @@
 import db from "../Config/db.js";
-
+import cloudinary from "../Config/cloudinary.js";
 export const GetJobType = async (req, res) => {
   const { id, roleid } = req.user;
 
@@ -26,9 +26,31 @@ export const GetJobType = async (req, res) => {
   }
 };
 
+const UplodePDF = (buffer) => {
+  return new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "job-portal-pdf",
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) {
+          console.log("UPLOAD ERROR:", error);
+          return reject(error);
+        }
+
+        resolve(result);
+      },
+    );
+
+    stream.end(buffer);
+  });
+};
+
 export const AddJob = async (req, res) => {
   const userId = req.user?.id;
-  const { jobdata } = req.body;
+  const jobdata = JSON.parse(req.body.jobdata);
+  const pdffile = req.file;
   const roleid = req.user?.roleid;
 
   // User validation
@@ -58,10 +80,10 @@ export const AddJob = async (req, res) => {
     officialLinks = [],
   } = jobdata;
 
-  if (!maindata.title) {
+  if (!maindata.organization) {
     return res.status(400).json({
       success: false,
-      message: "job title missing",
+      message: "department name missing",
     });
   }
 
@@ -118,6 +140,24 @@ export const AddJob = async (req, res) => {
 
     if (!jobId) {
       throw new Error("Job insertion failed");
+    }
+
+    if (pdffile) {
+      const result = await UplodePDF(pdffile.buffer);
+
+      await connection.query(
+        `INSERT INTO pdf_documents
+    (job_id, title, pdf_url, public_id, file_size, total_pages)
+    VALUES (?, ?, ?, ?, ?, ?)`,
+        [
+          jobId,
+          maindata.Pdfname,
+          result.secure_url,
+          result.public_id,
+          result.bytes,
+          null,
+        ],
+      );
     }
 
     // 2. Insert important dates
@@ -233,11 +273,15 @@ export const GetMyJobs = async (req, res) => {
       JT.name AS jobtype,
       JDT.last_date,
       JTV.total_vacancies
+  
+
 
    FROM jobs JD
 
    LEFT JOIN jobtype JT 
       ON JD.jobtype_id = JT.id
+
+   
 
    LEFT JOIN (
       SELECT 
@@ -275,7 +319,7 @@ SUm(total_vacancies) AS total_vacancies
 };
 
 export const GetMyJobDetail = async (req, res) => {
-    const userid = req.user?.id;
+  const userid = req.user?.id;
   const roleid = req.user?.roleid;
 
   if (!userid)
@@ -287,9 +331,6 @@ export const GetMyJobDetail = async (req, res) => {
       .json({ success: false, message: "You are not Recruiter to add job" });
 
   try {
-   
-
- 
     // 2. Get paginated jobs
     const [JobData] = await db.query(
       `SELECT
@@ -303,20 +344,23 @@ export const GetMyJobDetail = async (req, res) => {
         JD.description,
         JD.instructions,
         JT.name AS jobtype,
-        JT.id AS jobtypeId
+        JT.id AS jobtypeId,
+        PD.title as Pdfname,
+        PD.pdf_url as pdfFile,
+        PD.id as pdf_id
       FROM jobs JD
       LEFT JOIN jobtype JT ON JD.jobtype_id = JT.id
-      WHERE JD.deleted = ? and  JD.user_id = ?
+      LEFT JOIN pdf_documents PD ON PD.job_id = JD.id and PD.isdeleted = ?
+      WHERE JD.deleted = ? and  JD.user_id = ?  
      `,
-      [false,userid],
+      [false ,false, userid ],
     );
-
+ 
     // 3. If no jobs found
     if (JobData.length === 0) {
       return res.status(200).json({
         success: true,
         myjobs: [],
-        
       });
     }
 
@@ -388,7 +432,6 @@ export const GetMyJobDetail = async (req, res) => {
     return res.status(200).json({
       success: true,
       myjobs: formattedJobs,
-      
     });
   } catch (error) {
     console.log("GetJobDetailbyId Error:", error);
@@ -402,8 +445,9 @@ export const GetMyJobDetail = async (req, res) => {
 
 export const EditJob = async (req, res) => {
   const userId = req.user?.id;
-  const { jobdata } = req.body;
-   const roleid = req.user?.roleid;
+  const jobdata = JSON.parse(req.body.jobdata);
+  const pdffile = req.file;
+  const roleid = req.user?.roleid;
 
   if (!userId) {
     return res.status(401).json({
@@ -430,10 +474,10 @@ export const EditJob = async (req, res) => {
     officialLinks = [],
   } = jobdata;
 
-  if (!maindata.title || !maindata.jobdataid) {
+  if (!maindata.organization || !maindata.jobdataid) {
     return res.status(400).json({
       success: false,
-      message: "Job title or ID missing",
+      message: "Job detail  missing",
     });
   }
 
@@ -485,6 +529,46 @@ export const EditJob = async (req, res) => {
       ],
     );
 
+    if (!maindata.pdfFile && maindata.pdf_id) {
+      await connection.query(
+        `UPDATE pdf_documents SET
+       isdeleted =?   WHERE job_id = ? and id =?  `,
+        [true, jobId, maindata.pdf_id],
+      );
+    }
+
+    if (pdffile) {
+      const result = await UplodePDF(pdffile.buffer);
+      if (maindata.pdf_id) {
+        await connection.query(
+          `UPDATE pdf_documents SET
+       title =? , pdf_url = ?, public_id =? , file_size =? WHERE job_id = ? and id =?  `,
+          [
+            maindata.Pdfname,
+            result.secure_url,
+            result.public_id,
+            result.bytes,
+            jobId,
+            maindata.pdf_id,
+          ],
+        );
+      } else {
+        await connection.query(
+          `INSERT INTO pdf_documents
+            (job_id, title, pdf_url, public_id, file_size, total_pages)
+                VALUES (?, ?, ?, ?, ?, ?)`,
+          [
+            jobId,
+            maindata.Pdfname,
+            result.secure_url,
+            result.public_id,
+            result.bytes,
+            null,
+          ],
+        );
+      }
+    }
+
     // Check job ownership (affectedRows can be 0 if data is unchanged)
     const [jobCheck] = await connection.query(
       `SELECT id FROM jobs WHERE id = ? AND user_id = ?`,
@@ -503,7 +587,6 @@ export const EditJob = async (req, res) => {
     //   Update
     if (existingDates.length > 0) {
       for (const date of existingDates) {
-        
         await connection.query(
           `UPDATE job_dates SET
       date_title = ?,
@@ -574,7 +657,7 @@ export const EditJob = async (req, res) => {
       }
     }
 
-     // Bulk Delete
+    // Bulk Delete
     const postIds = existingPost.map((post) => post.vacancieid);
 
     if (postIds.length > 0) {
@@ -611,8 +694,6 @@ export const EditJob = async (req, res) => {
       );
     }
 
-   
-
     // 4. Official Links
 
     const existingLink = officialLinks.filter((link) => link.linkid);
@@ -631,7 +712,7 @@ export const EditJob = async (req, res) => {
       }
     }
 
-      // Bulk Delete
+    // Bulk Delete
     const linkIds = existingLink.map((link) => link.linkid);
 
     if (linkIds.length > 0) {
@@ -643,7 +724,6 @@ export const EditJob = async (req, res) => {
     } else {
       await connection.query(`DELETE FROM job_links WHERE job_id = ?`, [jobId]);
     }
-
 
     // Bulk Insert
     if (newLinks.length > 0) {
@@ -661,7 +741,6 @@ export const EditJob = async (req, res) => {
       );
     }
 
-  
     // 5. Commit
     await connection.commit();
 
