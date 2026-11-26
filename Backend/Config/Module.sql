@@ -54,9 +54,6 @@ CREATE TABLE jobs (
     FOREIGN KEY (jobtype_id) REFERENCES jobtype (id)
 );
 
- 
-
-
 select * FROM jobs
 
 CREATE TABLE job_dates (
@@ -79,7 +76,21 @@ CREATE TABLE job_vacancies (
     FOREIGN KEY (job_id) REFERENCES jobs (id)
 );
 
-select * FROM job_dates
+CREATE TABLE pdf_documents (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    job_id INT NOT NULL,
+    title VARCHAR(255),
+    pdf_url TEXT NOT NULL,
+    public_id VARCHAR(255) NOT NULL,
+    file_size BIGINT,
+    total_pages INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (job_id) REFERENCES jobs (id)
+);
+
+alter Table pdf_documents ADD COLUMN isdeleted BOOLEAN DEFAULT false
+
+select * FROM pdf_documents
 
 CREATE TABLE job_links (
     id INT AUTO_INCREMENT PRIMARY KEY,

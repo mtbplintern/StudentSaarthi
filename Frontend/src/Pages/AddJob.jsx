@@ -13,8 +13,11 @@ import {
   Trash2,
   Plus,
   LinkIcon,
-  IndianRupee
+  IndianRupee,
+  UploadCloud,
+  X
 } from 'lucide-react'
+
 import { useNavigate } from 'react-router-dom'
 import Footer from '../Component/Footer'
 import { backendurl } from '../config'
@@ -58,8 +61,11 @@ export default function AddJob ({ dbjobdata, accessfor }) {
     description: '',
     instructions: '',
     contactemail: '',
-    status: 'Published'
+    status: 'Published',
+    Pdfname: 'Official Notification PDF',
+    pdfFile: null
   }
+
   const [form, setForm] = useState(initialForm)
 
   const handleChange = e => {
@@ -149,8 +155,8 @@ export default function AddJob ({ dbjobdata, accessfor }) {
 
   const [officialLinks, setOfficialLinks] = useState([
     { title: 'Apply Online Link', url: '' },
-    { title: 'Official Website Link', url: '' },
-    { title: 'Official Notification PDF', url: '' }
+    { title: 'Official Website Link', url: '' }
+    // { title: 'Official Notification PDF', url: '' }
   ])
 
   const addOfficialLink = () => {
@@ -165,6 +171,30 @@ export default function AddJob ({ dbjobdata, accessfor }) {
     const updated = [...officialLinks]
     updated[index][field] = value
     setOfficialLinks(updated)
+  }
+
+  const handlePdfUpload = e => {
+    const file = e.target.files?.[0]
+
+    if (!file) return
+
+    if (file.type !== 'application/pdf') {
+      toast.error('Please upload a PDF file only.')
+      e.target.value = ''
+      return
+    }
+
+    setForm(prevForm => ({
+      ...prevForm,
+      pdfFile: file || null
+    }))
+
+    if (!initialForm?.Pdfname) {
+      setForm(prevForm => ({
+        ...prevForm,
+        Pdfname: file.name.replace(/\.pdf$/i, '')
+      }))
+    }
   }
 
   // Handle Form Submission
@@ -207,6 +237,14 @@ export default function AddJob ({ dbjobdata, accessfor }) {
     }
     GetJobType()
   }, [])
+  const removePdf = () => {
+    setForm(prevForm => ({
+      ...prevForm,
+      pdfFile: null
+    }))
+  }
+ 
+  console.log(form)
 
   // Input Styling - Red & White Theme
   const inputStyle =
@@ -669,6 +707,90 @@ export default function AddJob ({ dbjobdata, accessfor }) {
 
               <div className='border-t border-gray-100 my-6' />
 
+              <div className='rounded-xl border border-gray-200 bg-white overflow-hidden'>
+                <div className='grid grid-cols-1 md:grid-cols-2 gap-5 p-5'>
+                  {/* PDF Name */}
+                  <div>
+                    <label className={labelStyle}>
+                      PDF Name <span className='text-red-500'>*</span>
+                    </label>
+
+                    <input
+                      name='Pdfname'
+                      value={form?.Pdfname || ''}
+                      onChange={handleChange}
+                      placeholder='e.g. Official Notification PDF'
+                      className={inputStyle}
+                    />
+                  </div>
+
+                  {/* PDF Upload */}
+                  <div>
+                    <label className={labelStyle}>
+                      Upload PDF <span className='text-red-500'>*</span>
+                    </label>
+
+                    {!form.pdfFile ? (
+                      <label className='relative flex items-center gap-3 sm:p-3 p-2 min-h-17 border-2 border-dashed border-blue-300 rounded-xl bg-blue-50/50 hover:bg-blue-50 hover:border-blue-500 transition-all cursor-pointer group'>
+                        <input
+                          type='file'
+                          accept='.pdf,application/pdf'
+                          onChange={handlePdfUpload}
+                          className='absolute inset-0 w-full h-full opacity-0 cursor-pointer'
+                        />
+
+                        <div className='p-2 bg-white rounded-lg shadow-sm group-hover:scale-110 transition shrink-0'>
+                          <UploadCloud className=' w-5 sm:w-6 h-5 sm:h-6 text-blue-600' />
+                        </div>
+
+                        <div className='   w-full'>
+                          <p className='text-xs sm:text-sm font-semibold text-gray-700 flex gap-1'>
+                            Click to upload{' '}
+                            <span className='hidden sm:block'> or drag </span>{' '}
+                            PDF here
+                          </p>
+                          <p className='text-xs text-gray-400'>
+                            PDF files only
+                          </p>
+                        </div>
+                      </label>
+                    ) : (
+                      <div className='flex items-center gap-3 p-3 min-h-17 border border-green-200 bg-green-50 rounded-xl'>
+                        <div className='p-2 bg-white rounded-lg shrink-0'>
+                          <FileText className='w-6 h-6 text-red-500' />
+                        </div>
+
+                        <div className='flex-1 min-w-0'>
+                          <p className='text-sm font-semibold text-gray-800 truncate'>
+                            {form?.pdfFile?.name || form?.Pdfname}
+                          </p>
+                          {form?.pdfFile?.size && (
+                            <p className='text-xs text-gray-500'>
+                              {(form?.pdfFile?.size / 1024 / 1024).toFixed(2)}{' '}
+                              MB
+                            </p>
+                          )}
+                        </div>
+
+                    
+                          <button
+                            type='button'
+                            onClick={removePdf}
+                            className='  text-red-600   p-3 rounded-lg hover:text-white hover:bg-red-600 w-fit'
+                          >
+                                {EditingJob && form.pdf_id ? ( <Trash2 size={18} />) : (  <X size={18} />)}
+                           
+                          </button>
+                   
+                       
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+
+              <div className='border-t border-gray-100 my-6' />
+
               {/* Description */}
               <div className='mb-7'>
                 {/* <div className='flex items-center gap-4 mb-7'>
@@ -698,7 +820,7 @@ export default function AddJob ({ dbjobdata, accessfor }) {
                 </div> */}
 
                 <div className='flex gap-2 items-center'>
-                  <label className={`${labelStyle} w-15`} > Note *</label>
+                  <label className={`${labelStyle} w-15`}> Note *</label>
                   <textarea
                     rows={1}
                     name='instructions'
