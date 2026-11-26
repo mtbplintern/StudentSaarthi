@@ -353,9 +353,9 @@ export const GetMyJobDetail = async (req, res) => {
       LEFT JOIN pdf_documents PD ON PD.job_id = JD.id and PD.isdeleted = ?
       WHERE JD.deleted = ? and  JD.user_id = ?  
      `,
-      [false ,false, userid ],
+      [false, false, userid],
     );
- 
+
     // 3. If no jobs found
     if (JobData.length === 0) {
       return res.status(200).json({
@@ -529,6 +529,21 @@ export const EditJob = async (req, res) => {
       ],
     );
 
+    if (maindata.pdf_id) {
+      if (!maindata.pdfFile) {
+        await connection.query(
+          `UPDATE pdf_documents SET
+       isdeleted =?   WHERE job_id = ? and id =?  `,
+          [true, jobId, maindata.pdf_id],
+        );
+      } else {
+        await connection.query(
+          `UPDATE pdf_documents SET
+       title =?   WHERE job_id = ? and id =?  `,
+          [maindata.Pdfname, jobId, maindata.pdf_id],
+        );
+      }
+    }
     if (!maindata.pdfFile && maindata.pdf_id) {
       await connection.query(
         `UPDATE pdf_documents SET
