@@ -8,7 +8,7 @@ import { backendurl } from '../config'
 import Loading from '../Component/Loading'
 
 import Jobpage from '../Component/Jobpage'
-
+ 
 export default function Webpage () {
   const navigate = useNavigate()
 
