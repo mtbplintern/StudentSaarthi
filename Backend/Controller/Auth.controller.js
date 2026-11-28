@@ -165,7 +165,7 @@ export const RegisterUser = async (req, res) => {
 
 export const LoginUser = async (req, res) => {
   const { Email, Password } = req.body;
-console.log("email revive" , Email, Password);
+  console.log("email revive", Email, Password);
 
   if (!Email || !Password)
     return res.status(422).json({
@@ -176,7 +176,7 @@ console.log("email revive" , Email, Password);
     const [user] = await db.query(`SELECT * FROM users WHERE Email = ?`, [
       Email,
     ]);
-console.log(`${user} data revive`);
+    console.log(`${user} data revive`);
 
     if (user.length == 0)
       return res.status(404).json({
@@ -195,7 +195,7 @@ console.log(`${user} data revive`);
       id: user[0].id,
       roleid: user[0].roleid,
     };
-console.log(`${Paylode} paylode genrate`);
+    console.log(`${Paylode} paylode genrate`);
 
     const jwtkey = process.env.jwt_key;
 
@@ -206,11 +206,11 @@ console.log(`${Paylode} paylode genrate`);
       res.cookie("token", token, {
         httpOnly: true,
         secure: true,
-        sameSite: "none",
+        sameSite: "lax",
         maxAge: 7 * 24 * 60 * 60 * 1000,
       });
     }
-console.log("login success");
+    console.log("login success");
 
     res.status(200).json({
       success: true,
